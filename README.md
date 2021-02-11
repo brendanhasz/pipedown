@@ -1,2 +1,4 @@
-# drainpype
-A data science pipelining framework for Python to help guide the flow of your sh*tty data
+# :hankey: Drainpype :hankey:
+
+    A data science pipelining framework for Python to help you guide the flow of sh*tty data
+
