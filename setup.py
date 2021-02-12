@@ -4,14 +4,14 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name="drainpype",
+    name="pipedown",
     version="0.0.1",
     author="Brendan Hasz",
     author_email="winsto99@gmail.com",
-    description="A data science pipelining framework for Python to help you guide the flow of sh*tty data",
+    description="A data science pipelining framework for Python",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://github.com/brendanhasz/drainpype",
+    url="https://github.com/brendanhasz/pipedown",
     license="MIT",
     packages=find_packages(where="src"),
     package_dir={"": "src"},

@@ -1,5 +1,5 @@
 
-from drainpype.nodes.base.metric import Metric
+from pipedown.nodes.base.metric import Metric
 
 class MeanSquaredError(Metric):
 

@@ -12,10 +12,10 @@ test:
 
 format:
 	. venv/bin/activate; \
-        autoflake -r --in-place --remove-all-unused-imports --ignore-init-module-imports src/drainpype tests; \
-        isort src/drainpype tests; \
-	black src/drainpype tests; \
-	flake8 src/drainpype tests
+        autoflake -r --in-place --remove-all-unused-imports --ignore-init-module-imports src/pipedown tests; \
+        isort src/pipedown tests; \
+	black src/pipedown tests; \
+	flake8 src/pipedown tests
 
 docs:
 	. venv/bin/activate; \
@@ -39,5 +39,5 @@ push-package:
 	twine upload dist/*
 
 clean:
-	rm -rf .pytest_cache docs/_html build dist src/drainpype.egg-info
+	rm -rf .pytest_cache docs/_html build dist src/pipedown.egg-info
 	find . -type d -name __pycache__ -exec rm -rf {} \+

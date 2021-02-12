@@ -1,6 +1,6 @@
 import pandas as pd
 
-from drainpype.nodes.base.loader import Loader
+from pipedown.nodes.base.loader import Loader
 
 
 class SqlAlchemyLoader(Loader):

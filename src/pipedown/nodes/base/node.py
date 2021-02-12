@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
 
-from drainpype.visualization.node_drawers import rounded_box_fn_icon
+from pipedown.visualization.node_drawers import rounded_box_fn_icon
 
 
 class Node(ABC):

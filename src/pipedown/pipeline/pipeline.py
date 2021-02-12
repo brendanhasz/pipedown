@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
 
-from drainpype.cross_validation import RandomCrossValidator
+from pipedown.cross_validation import RandomCrossValidator
 
 class Pipeline(ABC):
     """Abstract base class for a Pipeline"""
@@ -72,13 +72,13 @@ class Pipeline(ABC):
         Notes
         -----
         
-        You can use drainpype.visualization.plot_metrics to plot the dataframe
+        You can use pipedown.visualization.plot_metrics to plot the dataframe
         returned from this method.
 
         .. code-block:: python3
 
-            from drainpype.visualization import plot_metrics
-            from drainpype.pipeline import Pipeline
+            from pipedown.visualization import plot_metrics
+            from pipedown.pipeline import Pipeline
 
             my_pipeline = # your pipeline
 

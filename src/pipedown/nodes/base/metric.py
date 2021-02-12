@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 from .node import Node
-from drainpype.visualization.node_drawers import rounded_box_metric_icon
+from pipedown.visualization.node_drawers import rounded_box_metric_icon
 
 
 class Metric(Node):
