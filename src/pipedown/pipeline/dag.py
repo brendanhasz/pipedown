@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Dict, Union
 
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
@@ -78,15 +78,20 @@ def run_dag(
 
 def get_dag_eval_order(
     inputs: Dict[str, Any],
-    outputs: List[str],
+    outputs: Union[str, List[str]],
     nodes,
 ):
     """Get a list of nodes in the subset of the DAG connecting the inputs
     and outputs, in reverse post-order.
     """
 
+    if isinstance(outputs, str):
+        outputs = [outputs]
+
     visited = set()
     visit_order = []
+
+    # TODO: might wanna check for circular graphs first...
 
     def dfs_walk(node):
         if node.name not in inputs:  # truncate the walk at inputs
@@ -99,6 +104,8 @@ def get_dag_eval_order(
     for node in nodes:
         if node.name in outputs:
             dfs_walk(node)
+
+    return visit_order
 
 
 def run_node(node, node_inputs, mode):
