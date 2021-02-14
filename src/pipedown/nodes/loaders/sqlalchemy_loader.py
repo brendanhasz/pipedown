@@ -30,6 +30,7 @@ class SqlAlchemyLoader(Loader):
         with open(query_filename, "r") as fid:
             if query_args:
                 from jinja2 import Template
+
                 return Template(fid.read()).render(**query_kwargs)
             else:
                 return fid.read()

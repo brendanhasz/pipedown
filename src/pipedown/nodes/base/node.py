@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Union, Set
+from typing import List, Set, Union
 
 from pipedown.visualization.node_drawers import rounded_box_fn_icon
 
@@ -40,7 +40,9 @@ class Node(BaseNode):
     def num_parents(self) -> int:
         return len(self._parents)
 
-    def add_children(self, children: Union[List[BaseNode], Set[BaseNode], BaseNode]):
+    def add_children(
+        self, children: Union[List[BaseNode], Set[BaseNode], BaseNode]
+    ):
         if isinstance(children, BaseNode):
             children = [children]
         for child in children:

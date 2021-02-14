@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Tuple
 
 import pandas as pd
@@ -7,45 +6,40 @@ from .cross_validator import CrossValidator
 
 
 class RandomCrossValidator(CrossValidator):
-    
     def __init__(self, n_splits=5, random_seed=12345):
         self.n_splits = n_splits
         self.random_seed = random_seed
 
-    def setup(self, X: pd.DataFrame, y) -> None:
+    def setup(self, df: pd.DataFrame) -> None:
         """Set up the cross-validation
 
         Parameters
         ----------
-        X : pd.DataFrame
-            Entire dataset of independent variables
-        y : pd.Series
-            Entire dataset of dependent variables
+        df : pd.DataFrame
+            The entire dataset
         """
         # TODO
 
-    def get_fold(self, X: pd.DataFrame, y: pd.Series, i: int) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+    def get_n_folds(self):
+        return self.n_splits
+
+    def get_fold(
+        self, df: pd.DataFrame, i: int
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Get one fold of data.
 
         Parameters
         ----------
-        X : pd.DataFrame
-            Entire dataset of independent variables
-        y : pd.Series
-            Entire dataset of dependent variables
+        df : pd.DataFrame
+            The entire dataset
         i : int
             Index of the cross-validation fold to return.
 
         Returns
         -------
-        X_train : pd.DataFrame
-            Training dataset of independent variables for this fold
-        y_train : pd.Series
-            Training dataset of dependent variables for this fold
-        X_val : pd.DataFrame
-            Validation dataset of independent variables for this fold
-        y_val : pd.Series
-            Validation dataset of dependent variables for this fold
+        df_train : pd.DataFrame
+            Training dataset for fold i
+        df_val : pd.DataFrame
+            Validation dataset for fold i
         """
-        #TODO
-
+        # TODO

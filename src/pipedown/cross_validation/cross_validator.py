@@ -12,40 +12,37 @@ class CrossValidator(ABC):
         pass
 
     @abstractmethod
-    def setup(self, X: pd.DataFrame, y) -> None:
+    def setup(self, df: pd.DataFrame) -> None:
         """Set up the cross-validation
 
         Parameters
         ----------
-        X : pd.DataFrame
-            Entire dataset of independent variables
-        y : pd.Series
-            Entire dataset of dependent variables
+        df : pd.DataFrame
+            The entire dataset
         """
+
+    @abstractmethod
+    def get_n_folds(self):
+        """Get the number of folds"""
         pass
 
     @abstractmethod
-    def get_fold(self, X: pd.DataFrame, y: pd.Series, i: int) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
+    def get_fold(
+        self, df: pd.DataFrame, i: int
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Get one fold of data.
 
         Parameters
         ----------
-        X : pd.DataFrame
-            Entire dataset of independent variables
-        y : pd.Series
-            Entire dataset of dependent variables
+        df : pd.DataFrame
+            The entire dataset
         i : int
             Index of the cross-validation fold to return.
 
         Returns
         -------
-        X_train : pd.DataFrame
-            Training dataset of independent variables for this fold
-        y_train : pd.Series
-            Training dataset of dependent variables for this fold
-        X_val : pd.DataFrame
-            Validation dataset of independent variables for this fold
-        y_val : pd.Series
-            Validation dataset of dependent variables for this fold
+        df_train : pd.DataFrame
+            Training dataset for fold i
+        df_val : pd.DataFrame
+            Validation dataset for fold i
         """
-        pass

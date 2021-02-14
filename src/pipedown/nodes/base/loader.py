@@ -1,5 +1,6 @@
-from .node import Node
 from pipedown.visualization.node_drawers import square_box_database_icon
+
+from .node import Node
 
 
 class Loader(Node):

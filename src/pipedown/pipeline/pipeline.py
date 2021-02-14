@@ -1,9 +1,14 @@
-from abc import ABC, abstractmethod
-from typing import Tuple, List, Any
+from abc import abstractmethod
+from typing import Any, List
 
+from pipedown.cross_validation.random import RandomCrossValidator
+from pipedown.cross_validation.cross_validator import CrossValidator
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
-from pipedown.cross_validation import RandomCrossValidator
+from pipedown.nodes.base.metric import Metric
+from pipedown.nodes.base.model import Model
+from pipedown.pipeline.dag import run_dag
+
 
 class Pipeline(Node):
     """Abstract base class for a Pipeline"""
@@ -11,137 +16,38 @@ class Pipeline(Node):
     @abstractmethod
     def nodes(self):
         """Initialize the components used in the pipeline"""
-        pass
 
     @abstractmethod
     def pipeline(self):
         """Define the connections between pipeline components"""
-        pass
 
-    def fit(self, inputs: Dict[str, Any]={}, outputs: Union[str, List[str]]=[]):
-        """Fit part of or the whole pipeline"""
-        self._run_dag(inputs, outputs, "train")
-
-    def run(self, inputs: Dict[str, Any]={}, outputs: Union[str, List[str]]=[]):
-        """Run part of or the whole pipeline"""
-        return self._run_dag(inputs, outputs, "test")
-
-    def _run_dag(self, inputs: Dict[str, Any], outputs: Union[str, List[str]], mode):
-        """Run the dag between inputs and outputs"""
-
-        # Assign parents + children for training mode
-        self._materialize_dag(mode=mode)
-
-        # Default output nodes are all nodes without children
-        if len(outputs) == 0:
-            outputs = [
-                n.name for n in self.get_nodes() if n.num_children() == 0
-            ]
-
-        # To store cached outputs
-        cached_outputs = {}
-        output_data = {}
-
-        def fit_node(node_inputs, node, mode):
-            if node_inputs is None:
-                if mode == "train":
-                    node.fit()
-                return node.run()
-            elif isinstance(node_inputs, tuple):
-                if mode == "train":
-                    node.fit(*node_inputs)
-                return node.run(*node_inputs)
-            else:
-                if mode == "train":
-                    node.fit(node_inputs)
-                return node.run(node_inputs)
-
-        # Run each node
-        for node in self._get_dag_eval_order(inputs, outputs):
-
-            # Fit and run the node
-            if node.num_parents() == 0:
-                node_outputs = fit_node(inputs.get(node.name), node)
-            elif node.num_parents() == 1:
-                parent_name = node.get_parents()[0].name
-                if parent_name in cached_outputs:
-                    node_outputs = fit_node(deepcopy(cached_outputs[parent_name]), node)
-                else:  # only child / single parent -> we ran this last step
-                    node_outputs = fit_node(node_outputs, node)
-            else:  # >1 parent, all of whose outputs will have been cached
-                node_outputs = fit_node(
-                    (deepcopy(cached_outputs[p.name]) for p in node.get_parents()),
-                    node
-                )
-
-            # Cache this node's outputs if it has multiple children
-            # or if any of its children have multiple parents
-            # TODO: there's definitely a more efficient way to be doing this...
-            # should delete data as soon as it won't be needed by further nodes
-            # and way you've currently got it set up there's an extra copy made
-            if node.num_children() > 1 or any(c.num_parents() > 1 for c in node.get_children()):
-                cached_outputs[node.name] = deepcopy(node_outputs)
-
-            # And store the output if this node is an output node
-            if node.name in outputs:
-                output_data[node_name] = node_outputs
-
-        # Return output data
-        if isinstance(outputs, str):
-            return output_data[outputs]
-        else:
-            return output_data
-
-
-    def _get_dag_eval_order(
-        self,
-        inputs: Dict[str, Any],
-        outputs: List[str],
+    def fit(
+        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
-        """Get a list of nodes in the subset of the DAG connecting the inputs
-        and outputs, in reverse post-order.
-        """
+        """Fit part of or the whole pipeline"""
+        run_dag(inputs, outputs, "train", self.get_nodes())
 
-        visited = set()
-        visit_order = []
+    def run(
+        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
+    ):
+        """Run part of or the whole pipeline"""
+        return run_dag(inputs, outputs, "test", self.get_nodes())
 
-        def dfs_walk(node):
-            if node.name not in inputs:  # truncate the walk at inputs
-                for parent in node.get_parents():
-                    if parent not in visited:
-                        dfs_walk(parent)
-            visited.add(node)
-            visit_order.append(node)
-
-        for node in self.get_nodes():
-            if node.name in outputs:
-                dfs_walk(node)
-
-
-    def _materialize_dag(self, mode: str):
-        """Assign doubly-linked edges depending on mode"""
-        for node in self.get_nodes():
-            node.reset_children()
-        for node in self.get_nodes():
-            if isinstance(node, Primary):
-                if mode == "train":
-                    node.set_parents(node.get_train_parent())
-                    node.get_train_parent().add_children(node)
-                else:
-                    node.set_parents(node.get_test_parent())
-                    node.get_test_parent().add_children(node)
-            else:
-                for parent in node.get_parents():
-                    parent.add_children(node)
-
-
-    def get_nodes(self) -> List[Node]:
+    def get_nodes(self, node_type=Node) -> List[Node]:
         """Get a list of all nodes contained in this pipeline"""
-        return [n for n in vars(self).values() if isinstance(n, Node)]
+        return [n for n in vars(self).values() if isinstance(n, node_type)]
+
+    def get_nodes_dict(self) -> Dict[str, Node]:
+        """Get a map from node names to node objects for nodes in pipeline"""
+        return {n.name: n for n in self.get_nodes()}
+
+    def get_node(self, node_name: str):
+        """Get a node in the pipeline by its name"""
+        return self.get_nodes_dict()[node_name]
 
     def get_primary(self) -> Node:
         """Get the primary node if it exists in the DAG"""
-        primaries = [p for p in self.get_nodes() if isinstance(p, Primary)]
+        primaries = self.get_nodes(Primary)
         if len(primaries) < 1:
             return None
         elif len(primaries) == 1:
@@ -151,7 +57,9 @@ class Pipeline(Node):
                 "There are multiple Primary data sources in your DAG!"
             )
 
-    def cv_predict(self, inputs=None, outputs=None, cross_validator=RandomCrossValidator()):
+    def cv_predict(
+        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = [], cross_validator: CrossValidator = RandomCrossValidator()
+    ):
         """Make cross-validated predictions using the pipeline
 
         Parameters
@@ -172,13 +80,42 @@ class Pipeline(Node):
             models in `outputs` list, with that model's predictions.
         """
 
+        # Default is to run all models in the pipeline
+        if isinstance(outputs, str):
+            outputs = [outputs]
+        if len(outputs) == 0:
+            outputs = [n.name for n in self.get_nodes(Model)]
+
         # Run the pipeline up to the Primary
-        df = self.run(outputs=[self.get_primary().name])
+        df, original_index = self.run_to_primary(inputs)
 
-        # Run the cross-validation
-        # TODO
+        # Run the cross-validation from the Primary to the output(s)
+        predictions = []
+        cross_validator.setup(df)
+        for i in range(cross_validator.get_n_folds()):
 
-    def cv_metric(self, inputs=None, outputs=None, cross_validator=RandomCrossValidator()):
+            # Get data for this fold
+            tdf = deepcopy(cross_validator.get_fold(df, i))
+
+            # Run the pipeline for this fold
+            predictions.append(self.run(inputs={self.get_primary().name: tdf}, outputs=outputs))
+
+        # Return the collated predictions
+        if isinstance(outputs, (list, set)) and len(outputs) > 1:
+            output_predictions = ()
+            for i, output in enumerate(outputs):
+                output_predictions[i] = pd.concat([p[i] for p in predictions])
+                output_predictions[i].sort_index(inplace=True)
+                output_predictions[i].set_index(original_index)
+        else:
+            output_predictions = pd.concat(predictions)
+            output_predictions.sort_index(inplace=True)
+            output_predictions.set_index(original_index)
+        return output_predictions
+
+    def cv_metric(
+        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = [], cross_validator: CrossValidator = RandomCrossValidator()
+    ):
         """Compute metric(s) from cross-validated predictions
 
         Parameters
@@ -219,7 +156,52 @@ class Pipeline(Node):
             plot_metrics(metrics)
 
         """
-        # TODO
+
+        # Default is to run all metrics in the pipeline
+        if isinstance(outputs, str):
+            outputs = [outputs]
+        if len(outputs) == 0:
+            outputs = [n.name for n in self.get_nodes(Metric)]
+
+        # Run the pipeline up to the Primary
+        df, original_index = self.run_to_primary(inputs)
+
+        # Run the cross-validation from the Primary to the output(s)
+        metrics = []
+        cross_validator.setup(df)
+        for i in range(cross_validator.get_n_folds()):
+
+            # Get data for this fold
+            tdf = deepcopy(cross_validator.get_fold(df, i))
+
+            # Run the pipeline for this fold
+            t_metrics = self.run(inputs={self.get_primary().name: tdf}, outputs=outputs)
+
+            # Store the metrics from this fold
+            for output in outputs:
+                m_node = self.get_node(output)
+                metrics.append({
+                    "model_name": m_node.get_parents()[0].name,
+                    "metric_name": m_node.get_metric_name(),
+                    "fold": i,
+                    "metric_value": t_metrics,
+                })
+
+        # Return the metrics
+        return pd.DataFrame.from_records(metrics)
+
+
+    def run_to_primary(self, inputs):
+        """Run the pipeline up to the Primary"""
+        primary_name = self.get_primary().name
+        if primary_name in inputs:  # data for primary is already computed
+            df = inputs[primary_name]
+        else:  # not already computed - so we have to run the pipeline
+            df = self.run(inputs=inputs, outputs=[primary_name])
+        original_index = df.index
+        df = df.reset_index(inplace=True, drop=True)
+        return df, original_index
+
 
     def save(self, filename: str):
         """Serialize the entire pipeline"""

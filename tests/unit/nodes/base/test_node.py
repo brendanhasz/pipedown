@@ -1,25 +1,24 @@
-import pytest
 import pandas as pd
+import pytest
 
 from pipedown.nodes.base.node import Node
+
 
 def test_node():
 
     # It's an ABC, so this shouldn't work
     with pytest.raises(TypeError):
-        node = Node('name')
+        node = Node("name")
 
     class MyBadNode(Node):
-
         def fit(self, X, y):
             pass
 
     # Didn't implement run(), so this shouldn't work
     with pytest.raises(TypeError):
-        node = MyBadNode('name')
+        node = MyBadNode("name")
 
     class MyNode(Node):
-
         def fit(self, X, y):
             self.lala = "some_value"
 
@@ -39,9 +38,9 @@ def test_node():
     y = pd.Series([7, 8, 9])
 
     # fit should store new attribs in the node
-    assert not hasattr(node, 'lala')
+    assert not hasattr(node, "lala")
     node.fit(X, y)
-    assert hasattr(node, 'lala')
+    assert hasattr(node, "lala")
     assert node.lala == "some_value"
 
     # Run should return changed dfs

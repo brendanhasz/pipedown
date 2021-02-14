@@ -1,6 +1,8 @@
 # Pipedown :shushing_face:
 
-> A data science pipelining framework for Python
+A data science pipelining framework for Python.
+
+Still in the super early stages - don't use this yet!
 
 Roadmap:
 

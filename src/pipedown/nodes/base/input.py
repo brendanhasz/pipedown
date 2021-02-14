@@ -1,7 +1,8 @@
 import pandas as pd
 
-from .node import Node
 from pipedown.visualization.node_drawers import square_box_json_icon
+
+from .node import Node
 
 
 class Input(Node):
@@ -22,17 +23,36 @@ class Input(Node):
         """Convert data to DataFrame"""
 
         # Check format is valid
-        if format not in ["dataframe", "series", "rows", "columns", "single", "auto"]:
+        if format not in [
+            "dataframe",
+            "series",
+            "rows",
+            "columns",
+            "single",
+            "auto",
+        ]:
             raise ValueError("Invalid format")
 
         # Convert the data
-        if format=="dataframe" or (format=="auto" and isinstance(data, pd.DataFrame)):
+        if format == "dataframe" or (
+            format == "auto" and isinstance(data, pd.DataFrame)
+        ):
             return data
-        elif format=="series" or (format=="auto" and isinstance(data, pd.Series)):
+        elif format == "series" or (
+            format == "auto" and isinstance(data, pd.Series)
+        ):
             return pd.DataFrame.from_records([data.to_dict()])
-        elif format=="rows" or (format=="auto" and isinstance(data, list) and all(isinstance(e, dict) for e in data)):
+        elif format == "rows" or (
+            format == "auto"
+            and isinstance(data, list)
+            and all(isinstance(e, dict) for e in data)
+        ):
             return pd.DataFrame.from_records(data)
-        elif format=="columns" or (format=="auto" and isinstance(data, dict) and all(isinstance(v, list) for _, v in data.items())):
+        elif format == "columns" or (
+            format == "auto"
+            and isinstance(data, dict)
+            and all(isinstance(v, list) for _, v in data.items())
+        ):
             return pd.DataFrame.from_dict(data)
         else:  # assume just one record
             return pd.DataFrame.from_records([data])

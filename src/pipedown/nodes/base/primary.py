@@ -2,8 +2,9 @@ from typing import List
 
 import pandas as pd
 
-from .node import Node
 from pipedown.visualization.node_drawers import square_box_highlight
+
+from .node import Node
 
 
 class Primary(Node):
