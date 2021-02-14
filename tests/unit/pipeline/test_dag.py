@@ -1,10 +1,11 @@
 from pipedown.nodes.base.node import Node
-from pipedown.pipeline.dag import get_dag_eval_order, run_dag
+from pipedown.pipeline.dag import get_dag_eval_order
 
 
 class MyNode(Node):
     def run(self, *args):
         return args
+
 
 def test_dag_eval_order_linear():
 
@@ -124,6 +125,7 @@ def test_dag_eval_order_divergence():
 def test_dag_eval_order_convergence():
     pass
     # TODO
+
 
 def test_dag_eval_order_divergence_and_convergence():
     pass

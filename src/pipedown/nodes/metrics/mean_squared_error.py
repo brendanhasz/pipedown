@@ -1,3 +1,5 @@
+import pandas as pd
+
 from pipedown.nodes.base.metric import Metric
 
 

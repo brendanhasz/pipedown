@@ -24,7 +24,6 @@ class CrossValidator(ABC):
     @abstractmethod
     def get_n_folds(self):
         """Get the number of folds"""
-        pass
 
     @abstractmethod
     def get_fold(

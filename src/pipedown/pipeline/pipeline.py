@@ -1,13 +1,17 @@
 from abc import abstractmethod
-from typing import Any, List
+from copy import deepcopy
+from typing import Any, Dict, List, Union
 
-from pipedown.cross_validation.random import RandomCrossValidator
+import pandas as pd
+
 from pipedown.cross_validation.cross_validator import CrossValidator
-from pipedown.nodes.base.node import Node
-from pipedown.nodes.base.primary import Primary
+from pipedown.cross_validation.random import RandomCrossValidator
 from pipedown.nodes.base.metric import Metric
 from pipedown.nodes.base.model import Model
+from pipedown.nodes.base.node import Node
+from pipedown.nodes.base.primary import Primary
 from pipedown.pipeline.dag import run_dag
+from pipedown.pipeline.io import save_pipeline
 
 
 class Pipeline(Node):
@@ -58,7 +62,10 @@ class Pipeline(Node):
             )
 
     def cv_predict(
-        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = [], cross_validator: CrossValidator = RandomCrossValidator()
+        self,
+        inputs: Dict[str, Any] = {},
+        outputs: Union[str, List[str]] = [],
+        cross_validator: CrossValidator = RandomCrossValidator(),
     ):
         """Make cross-validated predictions using the pipeline
 
@@ -98,7 +105,11 @@ class Pipeline(Node):
             tdf = deepcopy(cross_validator.get_fold(df, i))
 
             # Run the pipeline for this fold
-            predictions.append(self.run(inputs={self.get_primary().name: tdf}, outputs=outputs))
+            predictions.append(
+                self.run(
+                    inputs={self.get_primary().name: tdf}, outputs=outputs
+                )
+            )
 
         # Return the collated predictions
         if isinstance(outputs, (list, set)) and len(outputs) > 1:
@@ -114,7 +125,10 @@ class Pipeline(Node):
         return output_predictions
 
     def cv_metric(
-        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = [], cross_validator: CrossValidator = RandomCrossValidator()
+        self,
+        inputs: Dict[str, Any] = {},
+        outputs: Union[str, List[str]] = [],
+        cross_validator: CrossValidator = RandomCrossValidator(),
     ):
         """Compute metric(s) from cross-validated predictions
 
@@ -175,21 +189,24 @@ class Pipeline(Node):
             tdf = deepcopy(cross_validator.get_fold(df, i))
 
             # Run the pipeline for this fold
-            t_metrics = self.run(inputs={self.get_primary().name: tdf}, outputs=outputs)
+            t_metrics = self.run(
+                inputs={self.get_primary().name: tdf}, outputs=outputs
+            )
 
             # Store the metrics from this fold
             for output in outputs:
                 m_node = self.get_node(output)
-                metrics.append({
-                    "model_name": m_node.get_parents()[0].name,
-                    "metric_name": m_node.get_metric_name(),
-                    "fold": i,
-                    "metric_value": t_metrics,
-                })
+                metrics.append(
+                    {
+                        "model_name": m_node.get_parents()[0].name,
+                        "metric_name": m_node.get_metric_name(),
+                        "fold": i,
+                        "metric_value": t_metrics,
+                    }
+                )
 
         # Return the metrics
         return pd.DataFrame.from_records(metrics)
-
 
     def run_to_primary(self, inputs):
         """Run the pipeline up to the Primary"""
@@ -201,7 +218,6 @@ class Pipeline(Node):
         original_index = df.index
         df = df.reset_index(inplace=True, drop=True)
         return df, original_index
-
 
     def save(self, filename: str):
         """Serialize the entire pipeline"""

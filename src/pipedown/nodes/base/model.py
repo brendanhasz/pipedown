@@ -1,5 +1,7 @@
 from abc import abstractmethod
 
+import pandas as pd
+
 from pipedown.visualization.node_drawers import square_box_model_icon
 
 from .node import Node

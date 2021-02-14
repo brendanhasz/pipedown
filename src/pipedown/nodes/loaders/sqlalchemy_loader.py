@@ -28,7 +28,7 @@ class SqlAlchemyLoader(Loader):
 
     def format_query(self, query_filename, query_kwargs):
         with open(query_filename, "r") as fid:
-            if query_args:
+            if query_kwargs:
                 from jinja2 import Template
 
                 return Template(fid.read()).render(**query_kwargs)

@@ -7,7 +7,7 @@ from .node import Node
 
 class Metric(Node):
 
-    self.draw = rounded_box_metric_icon
+    draw = rounded_box_metric_icon
 
     @abstractmethod
     def run(self, y_pred, y_true):

@@ -1,6 +1,6 @@
-from typing import Any, List, Dict, Union
+from copy import deepcopy
+from typing import Any, Dict, List, Union
 
-from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
 
 
@@ -35,6 +35,7 @@ def run_dag(
     output_data = {}
 
     # Run each node in reverse post-order
+    node_outputs = None
     for node in get_dag_eval_order(inputs, outputs, nodes):
 
         # Get node's inputs
@@ -48,8 +49,7 @@ def run_dag(
                 node_inputs = node_outputs
         else:  # >1 parent, all of whose outputs will have been cached
             node_inputs = (
-                deepcopy(cached_outputs[p.name])
-                for p in node.get_parents()
+                deepcopy(cached_outputs[p.name]) for p in node.get_parents()
             )
 
         # Run the node
@@ -67,7 +67,7 @@ def run_dag(
 
         # And store the output if this node is an output node
         if node.name in outputs:
-            output_data[node_name] = node_outputs
+            output_data[node.name] = node_outputs
 
     # Return output data
     if len(outputs) == 1:
