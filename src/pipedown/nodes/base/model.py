@@ -9,7 +9,7 @@ from .node import Node
 
 class Model(Node):
 
-    self.draw = square_box_model_icon
+    draw = square_box_model_icon
 
     @abstractmethod
     def fit(self, X: pd.DataFrame, y: pd.Series) -> None:

@@ -6,8 +6,18 @@ from .cross_validator import CrossValidator
 
 
 class RandomCrossValidator(CrossValidator):
-    def __init__(self, n_splits=5, random_seed=12345):
-        self.n_splits = n_splits
+    """Perform random split cross validation
+
+    Parameters
+    ----------
+    n_folds : int
+        Total number of folds for cross-validation.  Default = 5
+    random_seed : int
+        Random seed to use for the random split.  Default = 12345
+    """
+
+    def __init__(self, n_folds: int = 5, random_seed: int = 12345):
+        self.n_folds = n_folds
         self.random_seed = random_seed
 
     def setup(self, df: pd.DataFrame) -> None:
@@ -21,7 +31,7 @@ class RandomCrossValidator(CrossValidator):
         # TODO
 
     def get_n_folds(self):
-        return self.n_splits
+        return self.n_folds
 
     def get_fold(
         self, df: pd.DataFrame, i: int
