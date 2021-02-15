@@ -8,5 +8,5 @@ class ItemFilter:
         self.filter_function = filter_function
 
     def run(self, X: pd.DataFrame, y: Optional[pd.Series]):
-        ix = filter_function(X)
+        ix = self.filter_function(X)
         return X.loc[ix, :], y.loc[ix]
