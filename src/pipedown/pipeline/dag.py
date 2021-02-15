@@ -91,19 +91,24 @@ def get_dag_eval_order(
     visited = set()
     visit_order = []
 
-    # TODO: might wanna check for circular graphs first...
-
-    def dfs_walk(node):
+    def dfs_walk_reverse_post_order(node):
         if node.name not in inputs:  # truncate the walk at inputs
             for parent in node.get_parents():
                 if parent not in visited:
-                    dfs_walk(parent)
+                    dfs_walk_reverse_post_order(parent)
         visited.add(node)
         visit_order.append(node)
 
+    # Run a DFS starting at each output node
     for node in nodes:
         if node.name in outputs:
-            dfs_walk(node)
+            dfs_walk_reverse_post_order(node)
+
+    # Ensure there aren't any cycles in the graph
+    for i, node in enumerate(visit_order):
+        for child in node.get_children():
+            if child in visit_order and visit_order.index(child) < i:
+                raise RuntimeError("Your graph has a cycle in it!")
 
     return visit_order
 
