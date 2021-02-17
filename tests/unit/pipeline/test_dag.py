@@ -301,7 +301,7 @@ def test_dag_eval_order_divergence_and_convergence():
     #       /
     # c -> d -> h -> i -> k
     #  /         \    /
-    # e           -> j -> l
+    # e           -> j -> m
     a = MyNode("a")
     b = MyNode("b")
     c = MyNode("c")
@@ -313,7 +313,7 @@ def test_dag_eval_order_divergence_and_convergence():
     i = MyNode("i")
     j = MyNode("j")
     k = MyNode("k")
-    l = MyNode("l")
+    m = MyNode("m")
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -331,12 +331,12 @@ def test_dag_eval_order_divergence_and_convergence():
     j.set_parents(h)
     k.set_parents([i, j])
     i.add_children(k)
-    j.add_children([k, l])
-    l.set_parents(j)
-    nodes = [a, b, c, d, e, f, g, h, i, j, k, l]
+    j.add_children([k, m])
+    m.set_parents(j)
+    nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
 
     # The whole enchilada
-    order = get_dag_eval_order(["a", "c", "e"], ["g", "k", "l"], nodes)
+    order = get_dag_eval_order(["a", "c", "e"], ["g", "k", "m"], nodes)
     assert isinstance(order, list)
     assert len(order) == 12
     assert a in order
@@ -350,7 +350,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert i in order
     assert j in order
     assert k in order
-    assert l in order
+    assert m in order
     assert order.index(a) < order.index(b)
     assert order.index(c) < order.index(d)
     assert order.index(e) < order.index(d)
@@ -362,7 +362,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert order.index(h) < order.index(j)
     assert order.index(i) < order.index(k)
     assert order.index(j) < order.index(k)
-    assert order.index(j) < order.index(l)
+    assert order.index(j) < order.index(m)
 
     # Only g as an output
     order = get_dag_eval_order(["a", "c", "e"], "g", nodes)
@@ -379,7 +379,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert i not in order
     assert j not in order
     assert k not in order
-    assert l not in order
+    assert m not in order
     assert order.index(a) < order.index(b)
     assert order.index(c) < order.index(d)
     assert order.index(e) < order.index(d)
@@ -388,7 +388,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert order.index(f) < order.index(g)
 
     # Only k and l as outputs
-    order = get_dag_eval_order(["c", "e"], ["k", "l"], nodes)
+    order = get_dag_eval_order(["c", "e"], ["k", "m"], nodes)
     assert isinstance(order, list)
     assert len(order) == 8
     assert a not in order
@@ -402,7 +402,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert i in order
     assert j in order
     assert k in order
-    assert l in order
+    assert m in order
     assert order.index(c) < order.index(d)
     assert order.index(e) < order.index(d)
     assert order.index(d) < order.index(h)
@@ -410,7 +410,7 @@ def test_dag_eval_order_divergence_and_convergence():
     assert order.index(h) < order.index(j)
     assert order.index(i) < order.index(k)
     assert order.index(j) < order.index(k)
-    assert order.index(j) < order.index(l)
+    assert order.index(j) < order.index(m)
 
 
 def test_dag_eval_order_cycle():
@@ -435,4 +435,4 @@ def test_dag_eval_order_cycle():
 
     # Should raise runtime error if there's a cycle
     with pytest.raises(RuntimeError):
-        order = get_dag_eval_order("a", "e", nodes)
+        _ = get_dag_eval_order("a", "e", nodes)

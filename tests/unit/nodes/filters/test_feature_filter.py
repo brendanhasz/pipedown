@@ -2,23 +2,24 @@ import pandas as pd
 
 from pipedown.nodes.filters.feature_filter import FeatureFilter
 
+
 def test_feature_filter():
 
     X = pd.DataFrame()
-    X['a'] = [1, 2, 3, 4]
-    X['b'] = ['a', 'b', 'c', 'd']
-    X['c'] = [5.0, 6.0, 7.0, 8.0]
+    X["a"] = [1, 2, 3, 4]
+    X["b"] = ["a", "b", "c", "d"]
+    X["c"] = [5.0, 6.0, 7.0, 8.0]
     y = pd.Series([10, 11, 12, 13])
 
-    feature_filter = FeatureFilter("name", ['a', 'c'])
+    feature_filter = FeatureFilter("name", ["a", "c"])
     xo, yo = feature_filter.run(X, y)
 
     assert isinstance(xo, pd.DataFrame)
     assert xo.shape[0] == 4
     assert xo.shape[1] == 2
-    assert 'a' in xo
-    assert 'b' not in xo
-    assert 'c' in xo
+    assert "a" in xo
+    assert "b" not in xo
+    assert "c" in xo
     assert xo.iloc[0, 0] == 1
     assert xo.iloc[1, 0] == 2
     assert xo.iloc[2, 0] == 3

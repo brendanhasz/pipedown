@@ -3,13 +3,14 @@ import pandas as pd
 
 from pipedown.nodes.transforms.imputer import Imputer
 
+
 def test_imputer(is_close):
 
     df = pd.DataFrame()
-    df['a'] = [1, 3, np.nan, 5]
-    df['b'] = [5, 6, 7, 8]
-    df['c'] = ['a', np.nan, 'c', 'c']
-    df['d'] = pd.Categorical(pd.Series([np.nan, 'd', 'd', 'e']))
+    df["a"] = [1, 3, np.nan, 5]
+    df["b"] = [5, 6, 7, 8]
+    df["c"] = ["a", np.nan, "c", "c"]
+    df["d"] = pd.Categorical(pd.Series([np.nan, "d", "d", "e"]))
 
     # By default should run for all columns with nan values
     imputer = Imputer()
@@ -27,11 +28,11 @@ def test_imputer(is_close):
     assert dfo.iloc[1, 1] == 6
     assert dfo.iloc[2, 1] == 7
     assert dfo.iloc[3, 1] == 8
-    assert dfo.iloc[0, 2] == 'a'
-    assert dfo.iloc[1, 2] == 'c'
-    assert dfo.iloc[2, 2] == 'c'
-    assert dfo.iloc[3, 2] == 'c'
-    assert dfo.iloc[0, 3] == 'd'
-    assert dfo.iloc[1, 3] == 'd'
-    assert dfo.iloc[2, 3] == 'd'
-    assert dfo.iloc[3, 3] == 'e'
+    assert dfo.iloc[0, 2] == "a"
+    assert dfo.iloc[1, 2] == "c"
+    assert dfo.iloc[2, 2] == "c"
+    assert dfo.iloc[3, 2] == "c"
+    assert dfo.iloc[0, 3] == "d"
+    assert dfo.iloc[1, 3] == "d"
+    assert dfo.iloc[2, 3] == "d"
+    assert dfo.iloc[3, 3] == "e"

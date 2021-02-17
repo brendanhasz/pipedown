@@ -1,7 +1,7 @@
 import pandas as pd
 
-class Collate:
 
+class Collate:
     def run(self, *args):
         return (
             pd.concat([e[i] for e in args]).sort_index()

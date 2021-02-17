@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 import pandas as pd
 
 from pipedown.nodes.base.loader import Loader

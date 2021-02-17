@@ -1,9 +1,10 @@
-from typing import Union, List, Tuple
+from typing import List, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base.node import Node
+
 
 class Imputer(Node):
     """Impute missing values
@@ -26,12 +27,17 @@ class Imputer(Node):
     }
 
     categorical_methods = {
-        'mode': lambda c: c.mode().iloc[0],
+        "mode": lambda c: c.mode().iloc[0],
     }
 
-    categorical_dtypes = ['object', 'category']
+    categorical_dtypes = ["object", "category"]
 
-    def __init__(self, features: Union[str, List[str]]=[], continuous_method: str='mean', categorical_method: str='mode'):
+    def __init__(
+        self,
+        features: Union[str, List[str]] = [],
+        continuous_method: str = "mean",
+        categorical_method: str = "mode",
+    ):
 
         # Check methods are valid
         if continuous_method not in self.continuous_methods:
@@ -64,8 +70,9 @@ class Imputer(Node):
             else:
                 self.values[feature] = self.continuous_method(X[feature])
 
-    def run(self, X: pd.DataFrame, y: pd.Series) -> Tuple[pd.DataFrame, pd.Series]:
+    def run(
+        self, X: pd.DataFrame, y: pd.Series
+    ) -> Tuple[pd.DataFrame, pd.Series]:
         for feature in self.features:
             X.loc[X[feature].isnull(), feature] = self.values[feature]
         return X, y
-
