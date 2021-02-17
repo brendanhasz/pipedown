@@ -3,8 +3,9 @@ from typing import Union, List, Tuple
 import numpy as np
 import pandas as pd
 
+from pipedown.nodes.base.node import Node
 
-class Imputer:
+class Imputer(Node):
     """Impute missing values
 
     Parameters

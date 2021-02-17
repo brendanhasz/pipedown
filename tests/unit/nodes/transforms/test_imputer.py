@@ -1,12 +1,9 @@
 import numpy as np
 import pandas as pd
 
-from .imputer import Imputer
+from pipedown.nodes.transforms.imputer import Imputer
 
-def is_close(a, b, thresh=1e-3):
-    return np.abs(a-b) < thresh
-
-def test_imputer():
+def test_imputer(is_close):
 
     df = pd.DataFrame()
     df['a'] = [1, 3, np.nan, 5]
@@ -27,9 +24,9 @@ def test_imputer():
     assert dfo.iloc[2, 0] == 3
     assert dfo.iloc[3, 0] == 5
     assert dfo.iloc[0, 1] == 5
-    assert dfo.iloc[1, 1] == 6 
-    assert dfo.iloc[2, 1] == 7 
-    assert dfo.iloc[3, 1] == 8 
+    assert dfo.iloc[1, 1] == 6
+    assert dfo.iloc[2, 1] == 7
+    assert dfo.iloc[3, 1] == 8
     assert dfo.iloc[0, 2] == 'a'
     assert dfo.iloc[1, 2] == 'c'
     assert dfo.iloc[2, 2] == 'c'

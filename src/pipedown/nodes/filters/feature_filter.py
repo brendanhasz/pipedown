@@ -2,7 +2,9 @@ from typing import Optional, List
 
 import pandas as pd
 
-class FeatureFilter:
+from pipedown.nodes.base.node import Node
+
+class FeatureFilter(Node):
 
     def init(self, features: List[str]):
         self.features = features
