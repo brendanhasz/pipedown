@@ -1,9 +1,9 @@
-from types import GeneratorType
 from copy import deepcopy
+from types import GeneratorType
 from typing import Any, Dict, List, Union
 
-from pipedown.nodes.base.primary import Primary
 from pipedown.nodes.base.input import Input
+from pipedown.nodes.base.primary import Primary
 
 
 def run_dag(

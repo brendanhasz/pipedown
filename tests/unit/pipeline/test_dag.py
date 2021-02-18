@@ -1,10 +1,9 @@
-import pytest
-
 import numpy as np
 import pandas as pd
+import pytest
 
-from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.input import Input
+from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
 from pipedown.pipeline.dag import get_dag_eval_order, run_dag
 
@@ -451,6 +450,7 @@ def test_run_dag_order():
     class ListAdder(Node):
         def fit(self, *args):
             fit_list.append(self.name)
+
         def run(self, *args):
             run_list.append(self.name)
 
@@ -493,34 +493,34 @@ def test_run_dag_order():
     nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
 
     # The whole enchilada
-    dag_outputs = run_dag({}, [], "train", nodes)
+    _ = run_dag({}, [], "train", nodes)
     for the_list in [fit_list, run_list]:
         assert isinstance(the_list, list)
         assert len(the_list) == 12
-        assert 'a' in the_list
-        assert 'b' in the_list
-        assert 'c' in the_list
-        assert 'd' in the_list
-        assert 'e' in the_list
-        assert 'f' in the_list
-        assert 'g' in the_list
-        assert 'h' in the_list
-        assert 'i' in the_list
-        assert 'j' in the_list
-        assert 'k' in the_list
-        assert 'm' in the_list
-        assert the_list.index('a') < the_list.index('b')
-        assert the_list.index('c') < the_list.index('d')
-        assert the_list.index('e') < the_list.index('d')
-        assert the_list.index('b') < the_list.index('f')
-        assert the_list.index('d') < the_list.index('f')
-        assert the_list.index('f') < the_list.index('g')
-        assert the_list.index('d') < the_list.index('h')
-        assert the_list.index('h') < the_list.index('i')
-        assert the_list.index('h') < the_list.index('j')
-        assert the_list.index('i') < the_list.index('k')
-        assert the_list.index('j') < the_list.index('k')
-        assert the_list.index('j') < the_list.index('m')
+        assert "a" in the_list
+        assert "b" in the_list
+        assert "c" in the_list
+        assert "d" in the_list
+        assert "e" in the_list
+        assert "f" in the_list
+        assert "g" in the_list
+        assert "h" in the_list
+        assert "i" in the_list
+        assert "j" in the_list
+        assert "k" in the_list
+        assert "m" in the_list
+        assert the_list.index("a") < the_list.index("b")
+        assert the_list.index("c") < the_list.index("d")
+        assert the_list.index("e") < the_list.index("d")
+        assert the_list.index("b") < the_list.index("f")
+        assert the_list.index("d") < the_list.index("f")
+        assert the_list.index("f") < the_list.index("g")
+        assert the_list.index("d") < the_list.index("h")
+        assert the_list.index("h") < the_list.index("i")
+        assert the_list.index("h") < the_list.index("j")
+        assert the_list.index("i") < the_list.index("k")
+        assert the_list.index("j") < the_list.index("k")
+        assert the_list.index("j") < the_list.index("m")
 
     while len(fit_list) > 0:
         fit_list.pop()
@@ -528,28 +528,28 @@ def test_run_dag_order():
         run_list.pop()
 
     # Only g as an output
-    dag_outputs = run_dag({"a": None, "c": None, "e": None}, "g", "train", nodes)
+    _ = run_dag({"a": None, "c": None, "e": None}, "g", "train", nodes)
     for the_list in [fit_list, run_list]:
         assert isinstance(the_list, list)
         assert len(the_list) == 7
-        assert 'a' in the_list
-        assert 'b' in the_list
-        assert 'c' in the_list
-        assert 'd' in the_list
-        assert 'e' in the_list
-        assert 'f' in the_list
-        assert 'g' in the_list
-        assert 'h' not in the_list
-        assert 'i' not in the_list
-        assert 'j' not in the_list
-        assert 'k' not in the_list
-        assert 'm' not in the_list
-        assert the_list.index('a') < the_list.index('b')
-        assert the_list.index('c') < the_list.index('d')
-        assert the_list.index('e') < the_list.index('d')
-        assert the_list.index('b') < the_list.index('f')
-        assert the_list.index('d') < the_list.index('f')
-        assert the_list.index('f') < the_list.index('g')
+        assert "a" in the_list
+        assert "b" in the_list
+        assert "c" in the_list
+        assert "d" in the_list
+        assert "e" in the_list
+        assert "f" in the_list
+        assert "g" in the_list
+        assert "h" not in the_list
+        assert "i" not in the_list
+        assert "j" not in the_list
+        assert "k" not in the_list
+        assert "m" not in the_list
+        assert the_list.index("a") < the_list.index("b")
+        assert the_list.index("c") < the_list.index("d")
+        assert the_list.index("e") < the_list.index("d")
+        assert the_list.index("b") < the_list.index("f")
+        assert the_list.index("d") < the_list.index("f")
+        assert the_list.index("f") < the_list.index("g")
 
     while len(fit_list) > 0:
         fit_list.pop()
@@ -557,30 +557,30 @@ def test_run_dag_order():
         run_list.pop()
 
     # Only k and l as outputs
-    dag_outputs = run_dag({"c": None, "e": None}, ["k", "m"], "train", nodes)
+    _ = run_dag({"c": None, "e": None}, ["k", "m"], "train", nodes)
     for the_list in [fit_list, run_list]:
         assert isinstance(the_list, list)
         assert len(the_list) == 8
-        assert 'a' not in the_list
-        assert 'b' not in the_list
-        assert 'c' in the_list
-        assert 'd' in the_list
-        assert 'e' in the_list
-        assert 'f' not in the_list
-        assert 'g' not in the_list
-        assert 'h' in the_list
-        assert 'i' in the_list
-        assert 'j' in the_list
-        assert 'k' in the_list
-        assert 'm' in the_list
-        assert the_list.index('c') < the_list.index('d')
-        assert the_list.index('e') < the_list.index('d')
-        assert the_list.index('d') < the_list.index('h')
-        assert the_list.index('h') < the_list.index('i')
-        assert the_list.index('h') < the_list.index('j')
-        assert the_list.index('i') < the_list.index('k')
-        assert the_list.index('j') < the_list.index('k')
-        assert the_list.index('j') < the_list.index('m')
+        assert "a" not in the_list
+        assert "b" not in the_list
+        assert "c" in the_list
+        assert "d" in the_list
+        assert "e" in the_list
+        assert "f" not in the_list
+        assert "g" not in the_list
+        assert "h" in the_list
+        assert "i" in the_list
+        assert "j" in the_list
+        assert "k" in the_list
+        assert "m" in the_list
+        assert the_list.index("c") < the_list.index("d")
+        assert the_list.index("e") < the_list.index("d")
+        assert the_list.index("d") < the_list.index("h")
+        assert the_list.index("h") < the_list.index("i")
+        assert the_list.index("h") < the_list.index("j")
+        assert the_list.index("i") < the_list.index("k")
+        assert the_list.index("j") < the_list.index("k")
+        assert the_list.index("j") < the_list.index("m")
 
 
 def test_run_dag_primary_branch():
@@ -590,7 +590,8 @@ def test_run_dag_primary_branch():
     class FeatureCreator(Node):
         def init(self, col, val, n):
             self.data = pd.DataFrame()
-            self.data[col] = val*np.ones(n)
+            self.data[col] = val * np.ones(n)
+
         def run(self, *args):
             run_list.append(self.name)
             return self.data
@@ -604,6 +605,7 @@ def test_run_dag_primary_branch():
         def init(self, col, val):
             self.col = col
             self.val = val
+
         def run(self, X, y):
             run_list.append(self.name)
             X[self.col] = self.val
@@ -613,6 +615,7 @@ def test_run_dag_primary_branch():
         def init(self, col, fn):
             self.col = col
             self.fn = fn
+
         def run(self, X, y):
             run_list.append(self.name)
             X[self.col] = self.fn(X[self.col])
@@ -622,24 +625,25 @@ def test_run_dag_primary_branch():
         def init(self, col, fn):
             self.col = col
             self.fn = fn
+
         def run(self, X):
             run_list.append(self.name)
             X[self.col] = self.fn(X[self.col])
             return X
 
-    fc1 = FeatureCreator("fc1", 'a', 1.0, 10)
-    fc2 = FeatureCreator("fc2", 'b', 2.0, 10)
-    fc3 = FeatureCreator("fc3", 'c', 3.0, 10)
+    fc1 = FeatureCreator("fc1", "a", 1.0, 10)
+    fc2 = FeatureCreator("fc2", "b", 2.0, 10)
+    fc3 = FeatureCreator("fc3", "c", 3.0, 10)
     fj1 = FeatureJoiner("fj1")
     fj2 = FeatureJoiner("fj2")
     input1 = Input("input1")
-    ft0 = PreFeatureTransformer('ft0', 'a', lambda x: x+50)
-    p = Primary("primary", ['a', 'b'], 'c')
-    fa1 = FeatureAdder('fa1', 'd', 4.0)
-    ft1 = FeatureTransformer('ft1', 'a', lambda x: x+100)
-    ft2 = FeatureTransformer('ft2', 'b', lambda x: x+200)
-    ft3 = FeatureTransformer('ft3', 'd', lambda x: x+10)
-    ft4 = FeatureTransformer('ft4', 'd', lambda x: x+20)
+    ft0 = PreFeatureTransformer("ft0", "a", lambda x: x + 50)
+    p = Primary("primary", ["a", "b"], "c")
+    fa1 = FeatureAdder("fa1", "d", 4.0)
+    ft1 = FeatureTransformer("ft1", "a", lambda x: x + 100)
+    ft2 = FeatureTransformer("ft2", "b", lambda x: x + 200)
+    ft3 = FeatureTransformer("ft3", "d", lambda x: x + 10)
+    ft4 = FeatureTransformer("ft4", "d", lambda x: x + 20)
     nodes = [fc1, fc2, fc3, fj1, fj2, input1, ft0, p, fa1, ft1, ft2, ft3, ft4]
 
     # fc1
@@ -663,15 +667,15 @@ def test_run_dag_primary_branch():
     # Running DAG in training mode should run the training branch pre-primary
     dag_outputs = run_dag({}, ["ft3", "ft4"], "train", nodes)
     assert "ft0" not in run_list
-    assert run_list.index('fc1') < run_list.index('fj1')
-    assert run_list.index('fc2') < run_list.index('fj1')
-    assert run_list.index('fc3') < run_list.index('fj2')
-    assert run_list.index('fj1') < run_list.index('fj2')
-    assert run_list.index('fj2') < run_list.index('fa1')
-    assert run_list.index('fa1') < run_list.index('ft1')
-    assert run_list.index('ft1') < run_list.index('ft2')
-    assert run_list.index('ft2') < run_list.index('ft3')
-    assert run_list.index('ft2') < run_list.index('ft4')
+    assert run_list.index("fc1") < run_list.index("fj1")
+    assert run_list.index("fc2") < run_list.index("fj1")
+    assert run_list.index("fc3") < run_list.index("fj2")
+    assert run_list.index("fj1") < run_list.index("fj2")
+    assert run_list.index("fj2") < run_list.index("fa1")
+    assert run_list.index("fa1") < run_list.index("ft1")
+    assert run_list.index("ft1") < run_list.index("ft2")
+    assert run_list.index("ft2") < run_list.index("ft3")
+    assert run_list.index("ft2") < run_list.index("ft4")
     assert isinstance(dag_outputs, dict)
     assert "ft3" in dag_outputs
     assert "ft4" in dag_outputs
@@ -687,31 +691,33 @@ def test_run_dag_primary_branch():
     assert dag_outputs["ft4"][0].shape[1] == 3
     assert dag_outputs["ft3"][1].shape[0] == 10
     assert dag_outputs["ft4"][1].shape[0] == 10
-    assert np.all(dag_outputs["ft3"][0].loc[:, 'a'] == 101.0)
-    assert np.all(dag_outputs["ft3"][0].loc[:, 'b'] == 202.0)
-    assert np.all(dag_outputs["ft3"][0].loc[:, 'd'] == 14.0)
-    assert np.all(dag_outputs["ft4"][0].loc[:, 'a'] == 101.0)
-    assert np.all(dag_outputs["ft4"][0].loc[:, 'b'] == 202.0)
-    assert np.all(dag_outputs["ft4"][0].loc[:, 'd'] == 24.0)
+    assert np.all(dag_outputs["ft3"][0].loc[:, "a"] == 101.0)
+    assert np.all(dag_outputs["ft3"][0].loc[:, "b"] == 202.0)
+    assert np.all(dag_outputs["ft3"][0].loc[:, "d"] == 14.0)
+    assert np.all(dag_outputs["ft4"][0].loc[:, "a"] == 101.0)
+    assert np.all(dag_outputs["ft4"][0].loc[:, "b"] == 202.0)
+    assert np.all(dag_outputs["ft4"][0].loc[:, "d"] == 24.0)
 
     # Reset the run list
     while len(run_list) > 0:
         run_list.pop()
 
     # Running DAG in test mode should only run the test branch pre-primary
-    input_data = [{'a': 1, 'b': 2}, {'a': 2.0, 'b': 3.0}]
-    dag_outputs = run_dag({"input1": input_data}, ["ft3", "ft4"], "test", nodes)
+    input_data = [{"a": 1, "b": 2}, {"a": 2.0, "b": 3.0}]
+    dag_outputs = run_dag(
+        {"input1": input_data}, ["ft3", "ft4"], "test", nodes
+    )
     assert "ft0" in run_list
     assert "fc1" not in run_list
     assert "fc2" not in run_list
     assert "fc3" not in run_list
     assert "fj1" not in run_list
     assert "fj2" not in run_list
-    assert run_list.index('ft0') < run_list.index('fa1')
-    assert run_list.index('fa1') < run_list.index('ft1')
-    assert run_list.index('ft1') < run_list.index('ft2')
-    assert run_list.index('ft2') < run_list.index('ft3')
-    assert run_list.index('ft2') < run_list.index('ft4')
+    assert run_list.index("ft0") < run_list.index("fa1")
+    assert run_list.index("fa1") < run_list.index("ft1")
+    assert run_list.index("ft1") < run_list.index("ft2")
+    assert run_list.index("ft2") < run_list.index("ft3")
+    assert run_list.index("ft2") < run_list.index("ft4")
     assert isinstance(dag_outputs, dict)
     assert "ft3" in dag_outputs
     assert "ft4" in dag_outputs
@@ -725,25 +731,25 @@ def test_run_dag_primary_branch():
     assert dag_outputs["ft3"][0].shape[1] == 3
     assert dag_outputs["ft4"][0].shape[0] == 2
     assert dag_outputs["ft4"][0].shape[1] == 3
-    assert dag_outputs["ft3"][0].loc[0, 'a'] == 151.0
-    assert dag_outputs["ft3"][0].loc[1, 'a'] == 152.0
-    assert dag_outputs["ft3"][0].loc[0, 'b'] == 202.0
-    assert dag_outputs["ft3"][0].loc[1, 'b'] == 203.0
-    assert dag_outputs["ft3"][0].loc[0, 'd'] == 14.0
-    assert dag_outputs["ft3"][0].loc[1, 'd'] == 14.0
-    assert dag_outputs["ft4"][0].loc[0, 'a'] == 151.0
-    assert dag_outputs["ft4"][0].loc[1, 'a'] == 152.0
-    assert dag_outputs["ft4"][0].loc[0, 'b'] == 202.0
-    assert dag_outputs["ft4"][0].loc[1, 'b'] == 203.0
-    assert dag_outputs["ft4"][0].loc[0, 'd'] == 24.0
-    assert dag_outputs["ft4"][0].loc[1, 'd'] == 24.0
+    assert dag_outputs["ft3"][0].loc[0, "a"] == 151.0
+    assert dag_outputs["ft3"][0].loc[1, "a"] == 152.0
+    assert dag_outputs["ft3"][0].loc[0, "b"] == 202.0
+    assert dag_outputs["ft3"][0].loc[1, "b"] == 203.0
+    assert dag_outputs["ft3"][0].loc[0, "d"] == 14.0
+    assert dag_outputs["ft3"][0].loc[1, "d"] == 14.0
+    assert dag_outputs["ft4"][0].loc[0, "a"] == 151.0
+    assert dag_outputs["ft4"][0].loc[1, "a"] == 152.0
+    assert dag_outputs["ft4"][0].loc[0, "b"] == 202.0
+    assert dag_outputs["ft4"][0].loc[1, "b"] == 203.0
+    assert dag_outputs["ft4"][0].loc[0, "d"] == 24.0
+    assert dag_outputs["ft4"][0].loc[1, "d"] == 24.0
 
     # Reset the run list
     while len(run_list) > 0:
         run_list.pop()
 
     # Running DAG with a single output
-    input_data = [{'a': 1, 'b': 2}, {'a': 2.0, 'b': 3.0}]
+    input_data = [{"a": 1, "b": 2}, {"a": 2.0, "b": 3.0}]
     dag_outputs = run_dag({"input1": input_data}, "ft3", "test", nodes)
     assert "ft0" in run_list
     assert "fc1" not in run_list
@@ -752,19 +758,18 @@ def test_run_dag_primary_branch():
     assert "fj1" not in run_list
     assert "fj2" not in run_list
     assert "ft4" not in run_list  # should NOT have run this one!
-    assert run_list.index('ft0') < run_list.index('fa1')
-    assert run_list.index('fa1') < run_list.index('ft1')
-    assert run_list.index('ft1') < run_list.index('ft2')
-    assert run_list.index('ft2') < run_list.index('ft3')
+    assert run_list.index("ft0") < run_list.index("fa1")
+    assert run_list.index("fa1") < run_list.index("ft1")
+    assert run_list.index("ft1") < run_list.index("ft2")
+    assert run_list.index("ft2") < run_list.index("ft3")
     assert isinstance(dag_outputs, tuple)
     assert isinstance(dag_outputs[0], pd.DataFrame)
     assert dag_outputs[1] is None
     assert dag_outputs[0].shape[0] == 2
     assert dag_outputs[0].shape[1] == 3
-    assert dag_outputs[0].loc[0, 'a'] == 151.0
-    assert dag_outputs[0].loc[1, 'a'] == 152.0
-    assert dag_outputs[0].loc[0, 'b'] == 202.0
-    assert dag_outputs[0].loc[1, 'b'] == 203.0
-    assert dag_outputs[0].loc[0, 'd'] == 14.0
-    assert dag_outputs[0].loc[1, 'd'] == 14.0
-
+    assert dag_outputs[0].loc[0, "a"] == 151.0
+    assert dag_outputs[0].loc[1, "a"] == 152.0
+    assert dag_outputs[0].loc[0, "b"] == 202.0
+    assert dag_outputs[0].loc[1, "b"] == 203.0
+    assert dag_outputs[0].loc[0, "d"] == 14.0
+    assert dag_outputs[0].loc[1, "d"] == 14.0
