@@ -1,11 +1,13 @@
+from types import GeneratorType
 from copy import deepcopy
 from typing import Any, Dict, List, Union
 
 from pipedown.nodes.base.primary import Primary
+from pipedown.nodes.base.input import Input
 
 
 def run_dag(
-    self, inputs: Dict[str, Any], outputs: Union[str, List[str]], mode, nodes
+    inputs: Dict[str, Any], outputs: Union[str, List[str]], mode, nodes
 ):
     """Run the dag between inputs and outputs"""
 
@@ -15,10 +17,10 @@ def run_dag(
     for node in nodes:
         if isinstance(node, Primary):
             if mode == "train":
-                node.set_parents(node.get_train_parent())
+                node.set_materialized_parent(node.get_train_parent())
                 node.get_train_parent().add_children(node)
             else:
-                node.set_parents(node.get_test_parent())
+                node.set_materialized_parent(node.get_test_parent())
                 node.get_test_parent().add_children(node)
         else:
             for parent in node.get_parents():
@@ -37,6 +39,10 @@ def run_dag(
     # Run each node in reverse post-order
     node_outputs = None
     for node in get_dag_eval_order(inputs, outputs, nodes):
+
+        # Check inputs are supplied
+        if isinstance(node, Input) and node.name not in inputs:
+            raise RuntimeError(f"No input supplied for {node.name}")
 
         # Get node's inputs
         if node.num_parents() == 0:
@@ -71,7 +77,7 @@ def run_dag(
 
     # Return output data
     if len(outputs) == 1:
-        return output_data[outputs]
+        return output_data[outputs[0]]
     else:
         return output_data
 
@@ -114,11 +120,16 @@ def get_dag_eval_order(
 
 
 def run_node(node, node_inputs, mode):
+    if isinstance(node, Primary):
+        return node.run(node_inputs, mode)
+    if isinstance(node_inputs, GeneratorType):
+        node_inputs = tuple(node_inputs)
     if node_inputs is None:
         if mode == "train":
             node.fit()
         return node.run()
     elif isinstance(node_inputs, tuple):
+        node_inputs = [e for e in node_inputs]
         if mode == "train":
             node.fit(*node_inputs)
         return node.run(*node_inputs)
