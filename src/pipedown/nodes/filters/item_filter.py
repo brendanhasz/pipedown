@@ -1,9 +1,11 @@
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import pandas as pd
 
-class ItemFilter:
+from pipedown.nodes.base.node import Node
 
+
+class ItemFilter(Node):
     def init(self, filter_function: Callable):
         self.filter_function = filter_function
 

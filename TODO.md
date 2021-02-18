@@ -1,0 +1,2 @@
+- Node should have __init__(self, name), and subclasses should call super().__init__(name) (instead of __init__ and init...)
+- Test pipeline

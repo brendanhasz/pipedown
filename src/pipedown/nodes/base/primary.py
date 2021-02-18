@@ -45,6 +45,9 @@ class Primary(Node):
         self._train_parent = train_parent
         self._test_parent = test_parent
 
+    def set_materialized_parent(self, parent):
+        self._parents = [parent]
+
     def get_train_parent(self):
         return self._train_parent
 
