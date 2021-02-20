@@ -10,8 +10,6 @@ class CatBoostRegressorModel:
 
     Parameters
     ----------
-    name : str
-        Name for this model
     verbose : bool
         Whether to print information during training
     thread_count : int
@@ -26,7 +24,7 @@ class CatBoostRegressorModel:
         * "Quantile:alpha=0.15"
 
     kwargs
-        All keyword arguments (including the above except `name`) are passed to
+        All keyword arguments (including the above) are passed to
         CatBoostRegressor.
 
 
@@ -43,8 +41,7 @@ class CatBoostRegressorModel:
     ```
     """
 
-    def __init__(self, name, **kwargs):
-        self.name = name
+    def __init__(self, **kwargs):
         self.model = CatBoostRegressor(**kwargs)
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series]) -> None:
@@ -52,5 +49,5 @@ class CatBoostRegressorModel:
 
     def run(
         self, X: pd.DataFrame, y: Optional[pd.Series]
-    ) -> Tuple[pd.DataFrame, pd.Series]:
+    ) -> Tuple[pd.DataFrame, Optional[pd.Series]]:
         return pd.Series(data=self.model.predict(X), index=X.index), y

@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pipedown.dag.dag_tools import get_dag_eval_order, run_dag
 from pipedown.nodes.base.input import Input
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
-from pipedown.pipeline.dag import get_dag_eval_order, run_dag
 
 
 class MyNode(Node):
@@ -16,10 +16,14 @@ class MyNode(Node):
 def test_dag_eval_order_linear():
 
     # a -> b -> c -> d
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -60,12 +64,18 @@ def test_dag_eval_order_divergence():
     # a -> b -> c -> d
     #            \
     #             -> e -> f
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
-    e = MyNode("e")
-    f = MyNode("f")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
+    e = MyNode()
+    e.name = "e"
+    f = MyNode()
+    f.name = "f"
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -135,13 +145,20 @@ def test_dag_eval_order_multi_divergence():
     #             -> e -> f
     #                 \
     #                  -> g
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
-    e = MyNode("e")
-    f = MyNode("f")
-    g = MyNode("g")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
+    e = MyNode()
+    e.name = "e"
+    f = MyNode()
+    f.name = "f"
+    g = MyNode()
+    g.name = "g"
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -233,13 +250,20 @@ def test_dag_eval_order_multi_convergence():
     # c -> d
     #  /
     # e
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
-    e = MyNode("e")
-    f = MyNode("f")
-    g = MyNode("g")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
+    e = MyNode()
+    e.name = "e"
+    f = MyNode()
+    f.name = "f"
+    g = MyNode()
+    g.name = "g"
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -306,18 +330,30 @@ def test_dag_eval_order_divergence_and_convergence():
     # c -> d -> h -> i -> k
     #  /         \    /
     # e           -> j -> m
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
-    e = MyNode("e")
-    f = MyNode("f")
-    g = MyNode("g")
-    h = MyNode("h")
-    i = MyNode("i")
-    j = MyNode("j")
-    k = MyNode("k")
-    m = MyNode("m")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
+    e = MyNode()
+    e.name = "e"
+    f = MyNode()
+    f.name = "f"
+    g = MyNode()
+    g.name = "g"
+    h = MyNode()
+    h.name = "h"
+    i = MyNode()
+    i.name = "i"
+    j = MyNode()
+    j.name = "j"
+    k = MyNode()
+    k.name = "k"
+    m = MyNode()
+    m.name = "m"
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -422,11 +458,16 @@ def test_dag_eval_order_cycle():
     # a -> b <------ d -> e
     #       \       /
     #        -> c ->
-    a = MyNode("a")
-    b = MyNode("b")
-    c = MyNode("c")
-    d = MyNode("d")
-    e = MyNode("e")
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    d = MyNode()
+    d.name = "d"
+    e = MyNode()
+    e.name = "e"
     b.set_parents([a, d])
     a.add_children(b)
     d.add_children([b, e])
@@ -459,18 +500,30 @@ def test_run_dag_order():
     # c -> d -> h -> i -> k
     #  /         \    /
     # e           -> j -> m
-    a = ListAdder("a")
-    b = ListAdder("b")
-    c = ListAdder("c")
-    d = ListAdder("d")
-    e = ListAdder("e")
-    f = ListAdder("f")
-    g = ListAdder("g")
-    h = ListAdder("h")
-    i = ListAdder("i")
-    j = ListAdder("j")
-    k = ListAdder("k")
-    m = ListAdder("m")
+    a = ListAdder()
+    a.name = "a"
+    b = ListAdder()
+    b.name = "b"
+    c = ListAdder()
+    c.name = "c"
+    d = ListAdder()
+    d.name = "d"
+    e = ListAdder()
+    e.name = "e"
+    f = ListAdder()
+    f.name = "f"
+    g = ListAdder()
+    g.name = "g"
+    h = ListAdder()
+    h.name = "h"
+    i = ListAdder()
+    i.name = "i"
+    j = ListAdder()
+    j.name = "j"
+    k = ListAdder()
+    k.name = "k"
+    m = ListAdder()
+    m.name = "m"
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -588,7 +641,8 @@ def test_run_dag_primary_branch():
     run_list = []
 
     class FeatureCreator(Node):
-        def init(self, col, val, n):
+        def __init__(self, col, val, n):
+            super().__init__()
             self.data = pd.DataFrame()
             self.data[col] = val * np.ones(n)
 
@@ -602,7 +656,8 @@ def test_run_dag_primary_branch():
             return pd.concat((d1, d2), axis=1)
 
     class FeatureAdder(Node):
-        def init(self, col, val):
+        def __init__(self, col, val):
+            super().__init__()
             self.col = col
             self.val = val
 
@@ -612,7 +667,8 @@ def test_run_dag_primary_branch():
             return X, y
 
     class FeatureTransformer(Node):
-        def init(self, col, fn):
+        def __init__(self, col, fn):
+            super().__init__()
             self.col = col
             self.fn = fn
 
@@ -622,7 +678,8 @@ def test_run_dag_primary_branch():
             return X, y
 
     class PreFeatureTransformer(Node):
-        def init(self, col, fn):
+        def __init__(self, col, fn):
+            super().__init__()
             self.col = col
             self.fn = fn
 
@@ -631,19 +688,32 @@ def test_run_dag_primary_branch():
             X[self.col] = self.fn(X[self.col])
             return X
 
-    fc1 = FeatureCreator("fc1", "a", 1.0, 10)
-    fc2 = FeatureCreator("fc2", "b", 2.0, 10)
-    fc3 = FeatureCreator("fc3", "c", 3.0, 10)
-    fj1 = FeatureJoiner("fj1")
-    fj2 = FeatureJoiner("fj2")
-    input1 = Input("input1")
-    ft0 = PreFeatureTransformer("ft0", "a", lambda x: x + 50)
-    p = Primary("primary", ["a", "b"], "c")
-    fa1 = FeatureAdder("fa1", "d", 4.0)
-    ft1 = FeatureTransformer("ft1", "a", lambda x: x + 100)
-    ft2 = FeatureTransformer("ft2", "b", lambda x: x + 200)
-    ft3 = FeatureTransformer("ft3", "d", lambda x: x + 10)
-    ft4 = FeatureTransformer("ft4", "d", lambda x: x + 20)
+    fc1 = FeatureCreator("a", 1.0, 10)
+    fc1.name = "fc1"
+    fc2 = FeatureCreator("b", 2.0, 10)
+    fc2.name = "fc2"
+    fc3 = FeatureCreator("c", 3.0, 10)
+    fc3.name = "fc3"
+    fj1 = FeatureJoiner()
+    fj1.name = "fj1"
+    fj2 = FeatureJoiner()
+    fj2.name = "fj2"
+    input1 = Input()
+    input1.name = "input1"
+    ft0 = PreFeatureTransformer("a", lambda x: x + 50)
+    ft0.name = "ft0"
+    p = Primary(["a", "b"], "c")
+    p.name = "primary"
+    fa1 = FeatureAdder("d", 4.0)
+    fa1.name = "fa1"
+    ft1 = FeatureTransformer("a", lambda x: x + 100)
+    ft1.name = "ft1"
+    ft2 = FeatureTransformer("b", lambda x: x + 200)
+    ft2.name = "ft2"
+    ft3 = FeatureTransformer("d", lambda x: x + 10)
+    ft3.name = "ft3"
+    ft4 = FeatureTransformer("d", lambda x: x + 20)
+    ft4.name = "ft4"
     nodes = [fc1, fc2, fc3, fj1, fj2, input1, ft0, p, fa1, ft1, ft2, ft3, ft4]
 
     # fc1
@@ -657,12 +727,24 @@ def test_run_dag_primary_branch():
     fj1.set_parents([fc1, fc2])
     fj2.set_parents([fj1, fc3])
     ft0.set_parents(input1)
-    p.set_parents(train_parent=fj2, test_parent=ft0)
     fa1.set_parents(p)
     ft1.set_parents(fa1)
     ft2.set_parents(ft1)
     ft3.set_parents(ft2)
     ft4.set_parents(ft2)
+    fc1.add_children(fj1)
+    fc2.add_children(fj1)
+    fj1.add_children(fj2)
+    fc3.add_children(fj2)
+    input1.add_children(ft0)
+    p.add_children(fa1)
+    fa1.add_children(ft1)
+    ft1.add_children(ft2)
+    ft2.add_children([ft3, ft4])
+
+    # Point to loaders in training mode
+    p.set_parents(fj2)
+    fj2.add_children(p)
 
     # Running DAG in training mode should run the training branch pre-primary
     dag_outputs = run_dag({}, ["ft3", "ft4"], "train", nodes)
@@ -701,6 +783,11 @@ def test_run_dag_primary_branch():
     # Reset the run list
     while len(run_list) > 0:
         run_list.pop()
+
+    # Switch parent of primary node
+    fj2.reset_children()
+    p.set_parents(ft0)
+    ft0.add_children(p)
 
     # Running DAG in test mode should only run the test branch pre-primary
     input_data = [{"a": 1, "b": 2}, {"a": 2.0, "b": 3.0}]

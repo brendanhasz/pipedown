@@ -11,7 +11,7 @@ def test_item_filter():
     X["c"] = [5.0, 6.0, 7.0, 8.0]
     y = pd.Series([10, 11, 12, 13])
 
-    item_filter = ItemFilter("name", lambda df: (df["a"] > 1) & (df["c"] < 8))
+    item_filter = ItemFilter(lambda df: (df["a"] > 1) & (df["c"] < 8))
     xo, yo = item_filter.run(X, y)
     assert isinstance(xo, pd.DataFrame)
     assert xo.shape[0] == 2
@@ -30,7 +30,7 @@ def test_item_filter():
     assert yo.iloc[0] == 11
     assert yo.iloc[1] == 12
 
-    item_filter = ItemFilter("name", lambda df: df["b"] == "c")
+    item_filter = ItemFilter(lambda df: df["b"] == "c")
     xo, yo = item_filter.run(X, y)
     assert isinstance(xo, pd.DataFrame)
     assert xo.shape[0] == 2

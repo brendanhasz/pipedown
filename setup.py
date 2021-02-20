@@ -42,6 +42,7 @@ setup(
             "setuptools >= 49.1.0",
             "twine >= 3.2.0",
             "wheel >= 0.34.2",
+            "catboost",
         ],
     },
 )

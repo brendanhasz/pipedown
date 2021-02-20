@@ -12,8 +12,9 @@ def test_null_fallback():
     df["c"] = [20, 30, 40, 50]
 
     nf = NullFallback([("a", "b"), ("b", "c")])
-    dfo = nf.run(df, None)
+    dfo, y = nf.run(df, None)
 
+    assert y is None
     assert dfo.iloc[0, 0] == 1
     assert dfo.iloc[1, 0] == 2
     assert dfo.iloc[2, 0] == 6
@@ -32,8 +33,9 @@ def test_null_fallback_double_replacement():
     df["c"] = [20, 30, 40, 50]
 
     nf = NullFallback([("a", "b"), ("b", "c")], n=2)
-    dfo = nf.run(df, None)
+    dfo, y = nf.run(df, None)
 
+    assert y is None
     assert dfo.iloc[0, 0] == 1
     assert dfo.iloc[1, 0] == 2
     assert dfo.iloc[2, 0] == 40

@@ -8,7 +8,7 @@ def test_node():
 
     # It's an ABC, so this shouldn't work
     with pytest.raises(TypeError):
-        node = Node("name")
+        node = Node()
 
     class MyBadNode(Node):
         def fit(self, X, y):
@@ -16,7 +16,7 @@ def test_node():
 
     # Didn't implement run(), so this shouldn't work
     with pytest.raises(TypeError):
-        node = MyBadNode("name")
+        node = MyBadNode()
 
     class MyNode(Node):
         def fit(self, X, y):
@@ -28,8 +28,7 @@ def test_node():
             return X, y
 
     # This *should* work
-    node = MyNode("name")
-    assert node.name == "name"
+    node = MyNode()
     assert len(node._parents) == 0
 
     X = pd.DataFrame()
@@ -61,9 +60,9 @@ def test_node():
     assert yo.iloc[2] == 11
 
     # Setting parents
-    node2 = MyNode("node2")
-    node3 = MyNode("node3")
-    node4 = MyNode("node4")
+    node2 = MyNode()
+    node3 = MyNode()
+    node4 = MyNode()
     node.set_parents(node2)
     assert isinstance(node.get_parents(), list)
     assert node2 in node.get_parents()

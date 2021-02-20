@@ -11,7 +11,7 @@ def test_feature_filter():
     X["c"] = [5.0, 6.0, 7.0, 8.0]
     y = pd.Series([10, 11, 12, 13])
 
-    feature_filter = FeatureFilter("name", ["a", "c"])
+    feature_filter = FeatureFilter(["a", "c"])
     xo, yo = feature_filter.run(X, y)
 
     assert isinstance(xo, pd.DataFrame)

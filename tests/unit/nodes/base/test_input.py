@@ -6,9 +6,7 @@ from pipedown.nodes.base.input import Input
 
 def test_input():
 
-    node = Input("my_input")
-
-    assert node.name == "my_input"
+    node = Input()
 
     with pytest.raises(ValueError):
         node.run({"a": 1, "b": 2}, format="lala")
@@ -137,3 +135,15 @@ def test_input():
     assert dfo.iloc[1, 2] == 6.0
     assert dfo.iloc[2, 2] == 7.0
     assert dfo.iloc[3, 2] == 8.0
+
+    # a single dict / datapoint, using auto
+    dfo = node.run({"a": 1, "b": "c", "d": 1.0})
+    assert isinstance(dfo, pd.DataFrame)
+    assert dfo.shape[0] == 1
+    assert dfo.shape[1] == 3
+    assert "a" in dfo
+    assert "b" in dfo
+    assert "d" in dfo
+    assert dfo.iloc[0, 0] == 1
+    assert dfo.iloc[0, 1] == "c"
+    assert dfo.iloc[0, 2] == 1.0

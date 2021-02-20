@@ -11,9 +11,7 @@ def test_primary():
     df["d"] = [1.0, 2.0, 3.0, 4.0]
     df["e"] = [5.0, 6.0, 7.0, 8.0]
 
-    node = Primary("primary", ["a", "b", "d"], "e")
-
-    assert node.name == "primary"
+    node = Primary(["a", "b", "d"], "e")
 
     x, y = node.run(df, mode="train")
     assert isinstance(x, pd.DataFrame)

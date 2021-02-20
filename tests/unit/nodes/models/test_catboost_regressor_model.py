@@ -13,7 +13,7 @@ def test_catboost_regressor_model():
     df["b"] = np.random.randn(10)
     df["c"] = np.random.randn() * df["a"] + np.random.randn() * df["b"]
 
-    crm = CatBoostRegressorModel("model_name", verbose=False, thread_count=1)
+    crm = CatBoostRegressorModel(verbose=False, thread_count=1)
 
     # Fit it
     crm.fit(df[["a", "b"]], df["c"])
