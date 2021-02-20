@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Set, Union, Any
+from typing import List, Set, Union
 
 from pipedown.visualization.node_drawers import rounded_box_fn_icon
 

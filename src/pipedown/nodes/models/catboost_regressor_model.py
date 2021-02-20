@@ -1,7 +1,6 @@
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 import pandas as pd
-
 from catboost import CatBoostRegressor
 
 
@@ -51,5 +50,7 @@ class CatBoostRegressorModel:
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series]) -> None:
         self.model = self.model.fit(X, y)
 
-    def run(self, X: pd.DataFrame, y: Optional[pd.Series]) -> Tuple[pd.DataFrame, pd.Series]:
+    def run(
+        self, X: pd.DataFrame, y: Optional[pd.Series]
+    ) -> Tuple[pd.DataFrame, pd.Series]:
         return pd.Series(data=self.model.predict(X), index=X.index), y

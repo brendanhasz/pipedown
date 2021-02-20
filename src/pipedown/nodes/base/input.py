@@ -19,7 +19,7 @@ class Input(Node):
 
     draw = square_box_json_icon
 
-    def run(self, data, format='auto'):
+    def run(self, data, format="auto"):
         """Convert data to DataFrame"""
 
         # Check format is valid

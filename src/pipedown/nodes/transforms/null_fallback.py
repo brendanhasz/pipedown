@@ -1,10 +1,11 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import pandas as pd
 
-class NullFallback():
+
+class NullFallback:
     """Replaces missing values with values from a different column
-    
+
     Parameters
     ----------
     fallback_list : List[Tuple[str, str]]
@@ -16,12 +17,14 @@ class NullFallback():
         Number of times to perform the replacements sequentially (doing
         repeated times will propagate the replacements)
     """
-    
-    def __init__(self, fallback_list: List[Tuple[str, str]], n: int =1):
+
+    def __init__(self, fallback_list: List[Tuple[str, str]], n: int = 1):
         self.fallback_list = fallback_list
         self.n = n
-    
-    def run(self, X: pd.DataFrame, y: Optional[pd.Series]) -> Tuple[pd.DataFrame, pd.Series]:
+
+    def run(
+        self, X: pd.DataFrame, y: Optional[pd.Series]
+    ) -> Tuple[pd.DataFrame, Optional[pd.Series]]:
         for _ in range(self.n):
             for missing, less_missing in self.fallback_list:
                 ix = X[missing].isnull()

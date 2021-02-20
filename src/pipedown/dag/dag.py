@@ -6,12 +6,12 @@ import pandas as pd
 
 from pipedown.cross_validation.cross_validator import CrossValidator
 from pipedown.cross_validation.random import RandomCrossValidator
+from pipedown.dag.dag_tools import run_dag
+from pipedown.dag.io import save_dag
 from pipedown.nodes.base.metric import Metric
 from pipedown.nodes.base.model import Model
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
-from pipedown.dag.dag_tools import run_dag
-from pipedown.dag.io import save_dag
 
 
 class DAG:
@@ -33,14 +33,14 @@ class DAG:
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
         """Fit part of or the whole pipeline"""
-        self.instantiate_dag(mode)
+        self.instantiate_dag("train")
         run_dag(inputs, outputs, self.get_nodes())
 
     def run(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
         """Run part of or the whole pipeline"""
-        self.instantiate_dag(mode)
+        self.instantiate_dag("test")
         return run_dag(inputs, outputs, self.get_nodes())
 
     def instantiate_dag(self, mode: str):
@@ -65,9 +65,16 @@ class DAG:
             child = self.get_node(child_name)
             if isinstance(parent_names, str) and parent_names in self._nodes:
                 parents = [self.get_node(parent_names)]
-            elif isinstance(parent_names, list) and all(p in self._nodes for p in parent_names):
+            elif isinstance(parent_names, list) and all(
+                p in self._nodes for p in parent_names
+            ):
                 parents = [self.get_node(p) for p in parent_names]
-            elif isinstance(parent_names, dict) and "test" in parent_names and "train" in parent_names and isinstance(child, Primary):
+            elif (
+                isinstance(parent_names, dict)
+                and "test" in parent_names
+                and "train" in parent_names
+                and isinstance(child, Primary)
+            ):
                 parents = [self.get_node(parent_names[mode])]
             else:
                 raise RuntimeError(f"Invalid parent(s) {parent_names}")
@@ -257,7 +264,7 @@ class DAG:
 
     def save(self, filename: str):
         """Serialize the entire pipeline"""
-        save_pipeline(self, filename)
+        save_dag(self, filename)
 
     def get_html(self):
         """Get html for the dashboard displaying the pipeline"""
