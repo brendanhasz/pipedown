@@ -7,6 +7,7 @@ from pipedown.nodes.base.node import Node
 
 class FeatureFilter(Node):
     def __init__(self, features: List[str]):
+        super().__init__()
         self.features = features
 
     def run(self, X: pd.DataFrame, y: Optional[pd.Series]):

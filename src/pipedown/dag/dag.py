@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from pipedown.cross_validation.cross_validator import CrossValidator
-from pipedown.cross_validation.random import RandomCrossValidator
+from pipedown.cross_validation.splitters import CrossValidationSplitter, RandomSplitter
+from pipedown.cross_validation.implementations import CrossValidationImplementation, Sequential
 from pipedown.dag.dag_tools import run_dag
 from pipedown.dag.io import save_dag
 from pipedown.nodes.base.metric import Metric
@@ -108,7 +108,9 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
-        cross_validator: CrossValidator = RandomCrossValidator(),
+        cross_validation_splitter: CrossValidationSplitter = RandomSplitter(),
+        cross_validation_implementation: CrossValidationImplementation = Sequential(),
+        verbose=False,
     ):
         """Make cross-validated predictions using the pipeline
 
@@ -121,6 +123,8 @@ class DAG:
             List of names of the model nodes from which to get predictions.
         cross_validator : CrossValidator object
             Cross-validation scheme to use.
+        verbose : bool
+            Whether to show fold times
 
         Returns
         -------
@@ -139,26 +143,16 @@ class DAG:
         # Run the pipeline up to the Primary
         df, original_index = self.run_to_primary(inputs)
 
-        # Run the cross-validation from the Primary to the output(s)
-        predictions = []
-        cross_validator.setup(df)
-        for i in range(cross_validator.get_n_folds()):
-
-            # Get data for this fold
-            tdf = deepcopy(cross_validator.get_fold(df, i))
-
-            # Run the pipeline for this fold
-            predictions.append(
-                self.run(
-                    inputs={self.get_primary().name: tdf}, outputs=outputs
-                )
-            )
+        # Run the cross-validation
+        predictions = cross_validation_implementation.run(
+            self, df, outputs, cross_validation_splitter
+        )
 
         # Return the collated predictions
         if isinstance(outputs, (list, set)) and len(outputs) > 1:
-            output_predictions = ()
+            output_predictions = []
             for i, output in enumerate(outputs):
-                output_predictions[i] = pd.concat([p[i] for p in predictions])
+                output_predictions += [pd.concat([p[i] for p in predictions])]
                 output_predictions[i].sort_index(inplace=True)
                 output_predictions[i].set_index(original_index)
         else:
@@ -171,7 +165,9 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
-        cross_validator: CrossValidator = RandomCrossValidator(),
+        cross_validation_splitter: CrossValidationSplitter = RandomSplitter(),
+        cross_validation_implementation: CrossValidationImplementation = Sequential(),
+        verbose=False,
     ):
         """Compute metric(s) from cross-validated predictions
 
@@ -182,8 +178,12 @@ class DAG:
             whole pipeline up to the metric node(s) specified in `outputs`.
         outputs : List[str]
             List of names of the metric nodes to evaluate.
-        cross_validator : CrossValidator object
+        cross_validation_splitter : CrossValidationSplitter object
             Cross-validation scheme to use.
+        cross_validation_implementation : CrossValidationImplementation object
+            Cross-validation implementation to use.
+        verbose : bool
+            Whether to show fold times and metrics
 
         Returns
         -------
@@ -223,32 +223,28 @@ class DAG:
         # Run the pipeline up to the Primary
         df, _ = self.run_to_primary(inputs)
 
-        # Run the cross-validation from the Primary to the output(s)
-        metrics = []
-        cross_validator.setup(df)
-        for i in range(cross_validator.get_n_folds()):
+        # Run the cross-validation
+        metrics = cross_validation_implementation.run(
+            self, df, outputs, cross_validation_splitter
+        )
 
-            # Get data for this fold
-            tdf = deepcopy(cross_validator.get_fold(df, i))
-
-            # Run the pipeline for this fold
-            t_metrics = self.run(
-                inputs={self.get_primary().name: tdf}, outputs=outputs
-            )
-
-            # Store the metrics from this fold
-            for output in outputs:
-                m_node = self.get_node(output)
-                metrics.append(
+        # Convert the metrics into a dataframe
+        if len(outputs) == 1:  # only a single output, metrics is a list
+            metrics = [{outputs[0]: m for m in metrics]
+        metric_list = []
+        for output in outputs:
+            m_node = self.get_node(output)
+            for i, metric_set in enumerate(metrics):
+                metric_list.append(
                     {
                         "model_name": m_node.get_parents()[0].name,
                         "metric_name": m_node.get_metric_name(),
                         "fold": i,
-                        "metric_value": t_metrics,
+                        "metric_value": metric_set[output],
                     }
                 )
 
-        # Return the metrics
+        # Return the metrics as a dataframe
         return pd.DataFrame.from_records(metrics)
 
     def run_to_primary(self, inputs):

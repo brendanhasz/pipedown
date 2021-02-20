@@ -2,10 +2,10 @@ from typing import Tuple
 
 import pandas as pd
 
-from .cross_validator import CrossValidator
+from .cross_validation_splitter import CrossValidationSplitter
 
 
-class OutOfTimeCrossValidator(CrossValidator):
+class OutOfTimeSplitter(CrossValidationSplitter):
     """Perform out-of-time cross validation
 
     TODO: explain what that means

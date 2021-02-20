@@ -39,6 +39,8 @@ class Imputer(Node):
         categorical_method: str = "mode",
     ):
 
+        super().__init__()
+
         # Check methods are valid
         if continuous_method not in self.continuous_methods:
             raise ValueError(

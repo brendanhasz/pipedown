@@ -17,6 +17,7 @@ class CsvLoader(Loader):
     """
 
     def __init__(self, filename: str, columns: Optional[List[str]], **kwargs):
+        super().__init__()
         self.filename = filename
         self.columns = columns
         self.kwargs = kwargs

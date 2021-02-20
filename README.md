@@ -16,3 +16,7 @@ Roadmap:
 * Partial dependence + SHAP values?
 * How to work probabilistic predictions into the framework?  Ie what about Bayesian models?  The current Model specification (returning just y_pred) won't work.
 
+
+Notes:
+
+- When instantiating a node with an `__init__`, make sure to call `super().__init__()`!

@@ -2,26 +2,21 @@ from typing import Tuple
 
 import pandas as pd
 
-from .cross_validator import CrossValidator
+from .cross_validation_splitter import CrossValidationSplitter
 
 
-class StratifiedCrossValidator(CrossValidator):
-    """Perform stratified cross validation
+class RandomSplitter(CrossValidationSplitter):
+    """Perform random split cross validation
 
     Parameters
     ----------
-    stratify_on : str
-        Name of the column / feature on which to stratify
     n_folds : int
         Total number of folds for cross-validation.  Default = 5
     random_seed : int
         Random seed to use for the random split.  Default = 12345
     """
 
-    def __init__(
-        self, stratify_on: str, n_folds: int = 5, random_seed: int = 12345
-    ):
-        self.stratify_on = stratify_on
+    def __init__(self, n_folds: int = 5, random_seed: int = 12345):
         self.n_folds = n_folds
         self.random_seed = random_seed
 

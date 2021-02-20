@@ -19,6 +19,7 @@ class NullFallback:
     """
 
     def __init__(self, fallback_list: List[Tuple[str, str]], n: int = 1):
+        super().__init__()
         self.fallback_list = fallback_list
         self.n = n
 

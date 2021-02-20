@@ -4,8 +4,8 @@ from typing import Tuple
 import pandas as pd
 
 
-class CrossValidator(ABC):
-    """Abstract base class for a cross-validation scheme"""
+class CrossValidationSplitter(ABC):
+    """Abstract base class for a cross-validation splitter"""
 
     @abstractmethod
     def __init__(self):
