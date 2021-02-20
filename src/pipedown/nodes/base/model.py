@@ -16,7 +16,7 @@ class Model(Node):
         pass
 
     @abstractmethod
-    def predict(self, X: pd.DataFrame, y: pd.Series) -> pd.Series:
+    def predict(self, X: pd.DataFrame) -> pd.Series:
         pass
 
     def run(self, X, y):

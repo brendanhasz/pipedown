@@ -11,21 +11,6 @@ def run_dag(
 ):
     """Run the dag between inputs and outputs"""
 
-    # Assign parents + children for training mode
-    for node in nodes:
-        node.reset_children()
-    for node in nodes:
-        if isinstance(node, Primary):
-            if mode == "train":
-                node.set_materialized_parent(node.get_train_parent())
-                node.get_train_parent().add_children(node)
-            else:
-                node.set_materialized_parent(node.get_test_parent())
-                node.get_test_parent().add_children(node)
-        else:
-            for parent in node.get_parents():
-                parent.add_children(node)
-
     # Default output nodes are all nodes without children
     if isinstance(outputs, str):
         outputs = [outputs]

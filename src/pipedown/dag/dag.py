@@ -10,44 +10,80 @@ from pipedown.nodes.base.metric import Metric
 from pipedown.nodes.base.model import Model
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
-from pipedown.pipeline.dag import run_dag
-from pipedown.pipeline.io import save_pipeline
+from pipedown.dag.dag_tools import run_dag
+from pipedown.dag.io import save_dag
 
 
-class Pipeline(Node):
-    """Abstract base class for a Pipeline"""
+class DAG:
+    """Abstract base class for a DAG"""
+
+    def __init__(self, name):
+        super().__init__(name)
+        self._nodes = None
 
     @abstractmethod
-    def nodes(self):
-        """Initialize the components used in the pipeline"""
+    def nodes(self) -> Dict[str, Node]:
+        """Get a dict of node names and objects used in the DAG"""
 
     @abstractmethod
-    def pipeline(self):
-        """Define the connections between pipeline components"""
+    def edges(self) -> Dict[str, Union[str, List[str]]]:
+        """Get the edges between nodes in the DAG"""
 
     def fit(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
         """Fit part of or the whole pipeline"""
-        run_dag(inputs, outputs, "train", self.get_nodes())
+        self.instantiate_dag(mode)
+        run_dag(inputs, outputs, self.get_nodes())
 
     def run(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
         """Run part of or the whole pipeline"""
-        return run_dag(inputs, outputs, "test", self.get_nodes())
+        self.instantiate_dag(mode)
+        return run_dag(inputs, outputs, self.get_nodes())
+
+    def instantiate_dag(self, mode: str):
+        """Create nodes and connections between them"""
+
+        # Create the nodes if they don't already exist
+        if self._nodes is None:
+            self._nodes = self.nodes()
+
+        # Assign names
+        for node, name in self._nodes:
+            node.name = name
+
+        # Clear pre-existing connections between nodes
+        for node in self._nodes:
+            node.reset_children()
+
+        # Create connections between nodes depending on mode
+        for child_name, parent_names in self.edges():
+
+            # Get actual child and parent(s) objects
+            child = self.get_node(child_name)
+            if isinstance(parent_names, str) and parent_names in self._nodes:
+                parents = [self.get_node(parent_names)]
+            elif isinstance(parent_names, list) and all(p in self._nodes for p in parent_names):
+                parents = [self.get_node(p) for p in parent_names]
+            elif isinstance(parent_names, dict) and "test" in parent_names and "train" in parent_names and isinstance(child, Primary):
+                parents = [self.get_node(parent_names[mode])]
+            else:
+                raise RuntimeError(f"Invalid parent(s) {parent_names}")
+
+            # Assign parents + children
+            child.set_parents(parents)
+            for parent in parents:
+                parent.add_children(child)
 
     def get_nodes(self, node_type=Node) -> List[Node]:
         """Get a list of all nodes contained in this pipeline"""
-        return [n for n in vars(self).values() if isinstance(n, node_type)]
-
-    def get_nodes_dict(self) -> Dict[str, Node]:
-        """Get a map from node names to node objects for nodes in pipeline"""
-        return {n.name: n for n in self.get_nodes()}
+        return [n for n in self._nodes.values() if isinstance(n, node_type)]
 
     def get_node(self, node_name: str):
         """Get a node in the pipeline by its name"""
-        return self.get_nodes_dict()[node_name]
+        return self._nodes[node_name]
 
     def get_primary(self) -> Node:
         """Get the primary node if it exists in the DAG"""
@@ -178,7 +214,7 @@ class Pipeline(Node):
             outputs = [n.name for n in self.get_nodes(Metric)]
 
         # Run the pipeline up to the Primary
-        df, original_index = self.run_to_primary(inputs)
+        df, _ = self.run_to_primary(inputs)
 
         # Run the cross-validation from the Primary to the output(s)
         metrics = []

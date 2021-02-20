@@ -31,7 +31,7 @@ class Primary(Node):
 
     draw = square_box_highlight
 
-    def init(self, x: List[str], y: str):
+    def __init__(self, x: List[str], y: str):
         self.x = x
         self.y = y
 
@@ -40,16 +40,3 @@ class Primary(Node):
             return df[self.x], None
         else:
             return df[self.x], df[self.y]
-
-    def set_parents(self, train_parent, test_parent):
-        self._train_parent = train_parent
-        self._test_parent = test_parent
-
-    def set_materialized_parent(self, parent):
-        self._parents = [parent]
-
-    def get_train_parent(self):
-        return self._train_parent
-
-    def get_test_parent(self):
-        return self._test_parent

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Set, Union
+from typing import List, Set, Union, Any
 
 from pipedown.visualization.node_drawers import rounded_box_fn_icon
 
@@ -12,14 +12,9 @@ class Node(BaseNode):
 
     draw = rounded_box_fn_icon
 
-    def __init__(self, name, *args, **kwargs):
-        self.name = name
+    def __init__(self):
         self._parents = []
         self._children = set()
-        self.init(*args, **kwargs)
-
-    def init(self, *args, **kwargs):
-        pass
 
     def fit(self, *args, **kwargs):
         pass
