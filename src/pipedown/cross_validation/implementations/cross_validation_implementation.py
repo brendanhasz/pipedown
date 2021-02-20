@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Any
+from typing import Any, List
 
 import pandas as pd
 
@@ -10,7 +10,9 @@ class CrossValidationImplementation(ABC):
     """Abstract base class for an implementation of cross-validation"""
 
     @abstractmethod
-    def run(self, dag, df: pd.DataFrame, outputs, splitter: CrossValidationSplitter) -> List[Any]:
+    def run(
+        self, dag, df: pd.DataFrame, outputs, splitter: CrossValidationSplitter
+    ) -> List[Any]:
         """Run the cross-validation
 
         Parameters
@@ -24,4 +26,3 @@ class CrossValidationImplementation(ABC):
         splitter : CrossValidationSplitter object
             The splitter to use
         """
-        pass

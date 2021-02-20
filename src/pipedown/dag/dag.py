@@ -1,11 +1,16 @@
 from abc import abstractmethod
-from copy import deepcopy
 from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from pipedown.cross_validation.splitters import CrossValidationSplitter, RandomSplitter
-from pipedown.cross_validation.implementations import CrossValidationImplementation, Sequential
+from pipedown.cross_validation.implementations import (
+    CrossValidationImplementation,
+    Sequential,
+)
+from pipedown.cross_validation.splitters import (
+    CrossValidationSplitter,
+    RandomSplitter,
+)
 from pipedown.dag.dag_tools import run_dag
 from pipedown.dag.io import save_dag
 from pipedown.nodes.base.metric import Metric
@@ -108,8 +113,8 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
-        cross_validation_splitter: CrossValidationSplitter = RandomSplitter(),
-        cross_validation_implementation: CrossValidationImplementation = Sequential(),
+        cv_splitter: CrossValidationSplitter = RandomSplitter(),
+        cv_implementation: CrossValidationImplementation = Sequential(),
         verbose=False,
     ):
         """Make cross-validated predictions using the pipeline
@@ -121,8 +126,10 @@ class DAG:
             up to the model node(s) specified in `outputs`.
         outputs : List[str]
             List of names of the model nodes from which to get predictions.
-        cross_validator : CrossValidator object
+        cv_splitter : CrossValidationSplitter object
             Cross-validation scheme to use.
+        cv_implementation : CrossValidationImplementation object
+            Cross-validation implementation to use.
         verbose : bool
             Whether to show fold times
 
@@ -144,9 +151,7 @@ class DAG:
         df, original_index = self.run_to_primary(inputs)
 
         # Run the cross-validation
-        predictions = cross_validation_implementation.run(
-            self, df, outputs, cross_validation_splitter
-        )
+        predictions = cv_implementation.run(self, df, outputs, cv_splitter)
 
         # Return the collated predictions
         if isinstance(outputs, (list, set)) and len(outputs) > 1:
@@ -165,8 +170,8 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
-        cross_validation_splitter: CrossValidationSplitter = RandomSplitter(),
-        cross_validation_implementation: CrossValidationImplementation = Sequential(),
+        cv_splitter: CrossValidationSplitter = RandomSplitter(),
+        cv_implementation: CrossValidationImplementation = Sequential(),
         verbose=False,
     ):
         """Compute metric(s) from cross-validated predictions
@@ -178,9 +183,9 @@ class DAG:
             whole pipeline up to the metric node(s) specified in `outputs`.
         outputs : List[str]
             List of names of the metric nodes to evaluate.
-        cross_validation_splitter : CrossValidationSplitter object
+        cv_splitter : CrossValidationSplitter object
             Cross-validation scheme to use.
-        cross_validation_implementation : CrossValidationImplementation object
+        cv_implementation : CrossValidationImplementation object
             Cross-validation implementation to use.
         verbose : bool
             Whether to show fold times and metrics
@@ -224,13 +229,11 @@ class DAG:
         df, _ = self.run_to_primary(inputs)
 
         # Run the cross-validation
-        metrics = cross_validation_implementation.run(
-            self, df, outputs, cross_validation_splitter
-        )
+        metrics = cv_implementation.run(self, df, outputs, cv_splitter)
 
         # Convert the metrics into a dataframe
         if len(outputs) == 1:  # only a single output, metrics is a list
-            metrics = [{outputs[0]: m for m in metrics]
+            metrics = [{outputs[0]: m} for m in metrics]
         metric_list = []
         for output in outputs:
             m_node = self.get_node(output)
