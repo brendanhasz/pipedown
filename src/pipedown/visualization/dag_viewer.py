@@ -16,6 +16,7 @@ def get_dag_viewer_html(dag):
     # Load static files
     html_css = get_static_file("html.css")
     pan_zoom_js = get_static_file("pan_zoom.js")
+    info_div_js = get_static_file("info_div.js")
     main_html = get_static_file(
         "main.html",
         dag_name=type(dag).__name__,
@@ -23,6 +24,7 @@ def get_dag_viewer_html(dag):
         pan_zoom_js=pan_zoom_js,
         dag_svg=dag_svg,
         info_pane_html=info_pane_html,
+        info_div_js=info_div_js,
     )
 
     # Return the html
@@ -31,24 +33,17 @@ def get_dag_viewer_html(dag):
 
 def get_info_pane_html(dag):
 
-    # Template for info panel
-    info_template = Template(
-        """
-    <div id="{{ name }}-info">
-        <h1>{{ name }}</h1>
-        <p>{{ description }}</p>
-    </div>
-    """
-    )
-
     # First get the DAG description
-    html = info_template.render(
-        name=type(dag).__name__, description=type(dag).__doc__
+    html = get_static_file(
+        "info_div.html",
+        id="dag-info",
+        name=type(dag).__name__,
+        description=type(dag).__doc__.split("\n\n"),
     )
 
     # Get the descriptions for each node
     for name, node in dag.get_node_dict().items():
-        html += info_template.render(name=name, description=node.__doc__)
+        html += get_static_file("info_div.html", id=name+"-info", name=name, description=node.__doc__.split("\n\n"))
 
     return html
 
@@ -61,10 +56,8 @@ def get_dag_svg(dag):
     # Get just the svg
     svg = svg[svg.find("<svg") : svg.find("</svg>") + 6]
 
-    # Add preserveAspectRatio, and remove width and height
-    svg = re.sub('width=".*?" ', "", svg, 1)
-    svg = re.sub('height=".*?"', "", svg, 1)
-    svg = '<svg preserveAspectRatio="xMinYMin meet"' + svg[4:]
+    # Change the font
+    svg = svg.replace("Times,serif", "Roboto,sans-serif")
 
     # Remove graphviz-generated style
     svg = remove_graphviz_style(svg)
@@ -108,6 +101,10 @@ def get_graphviz_svg(dag):
 
 
 def remove_graphviz_style(svg: str):
+
+    # Remove width and height
+    svg = re.sub('width=".*?" ', "", svg, 1)
+    svg = re.sub('height=".*?"', "", svg, 1)
 
     # Remove fill and stroke info from all polygons
     svg = svg.replace('fill="none" stroke="black" ', "")

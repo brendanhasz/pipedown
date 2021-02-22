@@ -9,7 +9,9 @@
     * Also, DAG should have a clear_caches method which runs clear_cache on every Cache node in the pipeline
 - ProcessPool cv_implementation
 - Visualization (exporting html/javascript of the viewer)
-    * https://www.petercollingridge.co.uk/tutorials/svg/interactive/mouseover-effects/
+    * Mouseover and click effects: https://www.petercollingridge.co.uk/tutorials/svg/interactive/mouseover-effects/
+    * Hide the info-pane elements. Default on open is to only show the DAG info div.  On clicking a node, hide all and show that node's info div.
+    * Initally show the DAG filling the dag-viewer div, centered vertically and horizontally
 
 
 

@@ -26,9 +26,9 @@ function while_drag() {
 function zoom(scroll_event) {
     var zoom_scaler = 1.0;
     if (scroll_event.wheelDelta > 0) {
-        zoom_scaler = 0.9;
+        zoom_scaler = 0.95;
     } else {
-        zoom_scaler = 1.1;
+        zoom_scaler = 1.05;
     }
     img_ele = document.getElementById('dag-svg');
     var pre_width = img_ele.getBoundingClientRect().width;

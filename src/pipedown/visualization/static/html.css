@@ -30,6 +30,7 @@ body {
 }
 
 #dag-viewer {
+    position: relative;
     background-color: #06090f;
     height: 100%;
     overflow: hidden;
@@ -44,5 +45,5 @@ body {
 .container {
     height: 100%;
     display: grid;
-    grid-template-columns: 400px 2px auto;
+    grid-template-columns: 500px 2px auto;
 }
