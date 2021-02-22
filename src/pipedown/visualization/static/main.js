@@ -68,6 +68,7 @@ function hide_all_info_divs() {
 
 /* SVG style */
 
+document.getElementById('dag-viewer').addEventListener('click', canvasMouseClick);
 var nodes = document.getElementsByClassName('node');
 for (var i = 0; i < nodes.length; i++) {
     nodes[i].addEventListener('mouseover', nodeMouseOver);
@@ -85,7 +86,8 @@ function nodeMouseOut() {
     this.classList.remove("node-highlight2");
 }
 
-function nodeMouseClick() {
+function nodeMouseClick(event) {
+    event.stopPropagation();
     clearNodeStyles();
     this.classList.add("node-highlight1");
     hide_all_info_divs();
