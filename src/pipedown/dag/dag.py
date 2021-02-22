@@ -58,7 +58,10 @@ class DAG:
 
             # Get actual child and parent(s) objects
             child = self.get_node(child_name)
-            if isinstance(parent_names, str) and parent_names in self.get_node_dict():
+            if (
+                isinstance(parent_names, str)
+                and parent_names in self.get_node_dict()
+            ):
                 parents = [self.get_node(parent_names)]
             elif isinstance(parent_names, list) and all(
                 p in self.get_node_dict() for p in parent_names
@@ -93,7 +96,11 @@ class DAG:
 
     def get_nodes(self, node_type=Node) -> List[Node]:
         """Get a list of all nodes contained in this pipeline"""
-        return [n for n in self.get_node_dict().values() if isinstance(n, node_type)]
+        return [
+            n
+            for n in self.get_node_dict().values()
+            if isinstance(n, node_type)
+        ]
 
     def get_node(self, node_name: str):
         """Get a node in the pipeline by its name"""

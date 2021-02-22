@@ -1,8 +1,9 @@
-import re
 import os
+import re
 
 from graphviz import Digraph
 from jinja2 import Template
+
 
 def get_dag_viewer_html(dag):
 
@@ -13,9 +14,15 @@ def get_dag_viewer_html(dag):
     info_pane_html = get_info_pane_html(dag)
 
     # Load static files
-    html_css = get_static_file('html.css')
+    html_css = get_static_file("html.css")
     # TODO: pan / zoom javascript
-    main_html = get_static_file('main.html', dag_name=type(dag).__name__, html_css=html_css, dag_svg=dag_svg, info_pane_html=info_pane_html)
+    main_html = get_static_file(
+        "main.html",
+        dag_name=type(dag).__name__,
+        html_css=html_css,
+        dag_svg=dag_svg,
+        info_pane_html=info_pane_html,
+    )
 
     # Return the html
     return main_html
@@ -24,15 +31,19 @@ def get_dag_viewer_html(dag):
 def get_info_pane_html(dag):
 
     # Template for info panel
-    info_template = Template("""
+    info_template = Template(
+        """
     <div id="{{ name }}-info">
         <h1>{{ name }}</h1>
         <p>{{ description }}</p>
     </div>
-    """)
+    """
+    )
 
     # First get the DAG description
-    html = info_template.render(name=type(dag).__name__, description=type(dag).__doc__)
+    html = info_template.render(
+        name=type(dag).__name__, description=type(dag).__doc__
+    )
 
     # Get the descriptions for each node
     for name, node in dag.get_node_dict().items():
@@ -48,13 +59,13 @@ def get_dag_svg(dag):
 
     # Get just the svg
     # TODO: re.search("<svg(.*)</svg>", svg) wasn't working for some reason?
-    svg = svg[svg.find("<svg"):svg.find("</svg>")+6]
+    svg = svg[svg.find("<svg") : svg.find("</svg>") + 6]
 
     # Remove graphviz-generated style
     svg = remove_graphviz_style(svg)
 
     # Get the templated css
-    svg_css = get_static_file('svg.css')
+    svg_css = get_static_file("svg.css")
 
     # Insert the style into the svg
     svg = re.sub(">.*?<", f">\n<style>\n{svg_css}\n</style>\n<", svg, 1)
@@ -65,7 +76,7 @@ def get_dag_svg(dag):
 def get_graphviz_svg(dag):
 
     # Create the graph
-    graph = Digraph(format='svg')
+    graph = Digraph(format="svg")
 
     # Create the nodes
     for node in dag.get_node_dict():
@@ -92,18 +103,19 @@ def get_graphviz_svg(dag):
 def remove_graphviz_style(svg: str):
 
     # Remove fill and stroke info from all polygons
-    svg = svg.replace("fill=\"none\" stroke=\"black\" ", "")
-    svg = svg.replace("fill=\"black\" stroke=\"black\" ", "")
+    svg = svg.replace('fill="none" stroke="black" ', "")
+    svg = svg.replace('fill="black" stroke="black" ', "")
 
     # Remove white background polygon
-    svg = re.sub("<polygon fill=\"white\".*?/>", "", svg)
+    svg = re.sub('<polygon fill="white".*?/>', "", svg)
 
     return svg
 
 
 def get_static_file(filename, **kwargs):
     """Load a static file, optionally jinja templating it with key/values"""
-    abs_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', filename)
-    with open(abs_filename, 'r') as fid:
+    abs_filename = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "static", filename
+    )
+    with open(abs_filename, "r") as fid:
         return Template(fid.read()).render(**kwargs)
-
