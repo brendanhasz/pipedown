@@ -1,0 +1,3 @@
+include src/pipedown/visualization/static/*.html
+include src/pipedown/visualization/static/*.css
+include src/pipedown/visualization/static/*.js
