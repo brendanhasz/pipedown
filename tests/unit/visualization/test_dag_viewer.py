@@ -1,9 +1,20 @@
 from pipedown.dag import DAG
-from pipedown.nodes.base.node import Node
+from pipedown.nodes.base import Node, Model
 from pipedown.visualization.dag_viewer import get_dag_viewer_html
 
 
 class MyNode(Node):
+    """This is the docstring for my node!
+
+    More info here.
+
+    And even more info here.
+    """
+
+    def run(self, X):
+        return X
+
+class MyModel(Model):
     """This is the docstring for my node!
 
     More info here.
@@ -29,8 +40,8 @@ class MyDAG(DAG):
             "b": MyNode(),
             "c": MyNode(),
             "d": MyNode(),
-            "e": MyNode(),
-            "f": MyNode(),
+            "e": MyModel(),
+            "f": MyModel(),
         }
 
     def edges(self):

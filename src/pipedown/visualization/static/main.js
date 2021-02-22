@@ -1,3 +1,5 @@
+/* Pan / Zooming */
+
 var img_ele = null;
 var x_cursor = 0;
 var y_cursor = 0;
@@ -38,8 +40,46 @@ function zoom(scroll_event) {
     img_ele = null;
 }
 
-/* Assign functions to event listenters */
+// Assign functions to event listenters
 document.getElementById('dag-viewer').addEventListener('mousedown', start_drag);
 document.getElementById('dag-viewer').addEventListener('mousemove', while_drag);
 document.getElementById('dag-viewer').addEventListener('mouseup', stop_drag);
 document.getElementById('dag-viewer').addEventListener('wheel', zoom);
+
+
+/* Info divs */
+
+function initialize_info_divs() {
+    hide_all_info_divs()
+    show_info_div('dag-info')
+}
+
+function show_info_div(id) {
+    document.getElementById(id).style.display = "block";
+}
+
+function hide_all_info_divs() {
+    var divs = document.getElementsByClassName("info-div");
+    for (var i = 0; i < divs.length; i++) {
+        divs.item(i).style.display = "none";
+    }
+}
+
+
+/* SVG style */
+
+var nodes = document.getElementsByClassName('node');
+for (var i = 0; i < nodes.length; i++) {
+    nodes[i].addEventListener('mouseover', nodeMouseOver);
+    nodes[i].addEventListener('mouseout', nodeMouseOut);
+}
+
+
+function nodeMouseOver() {
+    this.classList.add("node-highlight2");
+}
+
+
+function nodeMouseOut() {
+    this.classList.remove("node-highlight2");
+}

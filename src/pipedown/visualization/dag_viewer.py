@@ -6,29 +6,14 @@ from jinja2 import Template
 
 
 def get_dag_viewer_html(dag):
-
-    # Get the graphviz svg for the dag
-    dag_svg = get_dag_svg(dag)
-
-    # Get the node descriptions / data
-    info_pane_html = get_info_pane_html(dag)
-
-    # Load static files
-    html_css = get_static_file("html.css")
-    pan_zoom_js = get_static_file("pan_zoom.js")
-    info_div_js = get_static_file("info_div.js")
-    main_html = get_static_file(
+    return get_static_file(
         "main.html",
         dag_name=type(dag).__name__,
-        html_css=html_css,
-        pan_zoom_js=pan_zoom_js,
-        dag_svg=dag_svg,
-        info_pane_html=info_pane_html,
-        info_div_js=info_div_js,
+        css=get_static_file("main.css"),
+        js=get_static_file("main.js"),
+        dag_svg=get_dag_svg(dag),
+        info_pane_html=get_info_pane_html(dag),
     )
-
-    # Return the html
-    return main_html
 
 
 def get_info_pane_html(dag):
@@ -67,14 +52,6 @@ def get_dag_svg(dag):
     # Remove graphviz-generated style
     svg = remove_graphviz_style(svg)
 
-    # Get the templated css
-    svg_css = get_static_file("svg.css")
-
-    # Insert the style into the svg
-    svg = re.sub(">.*?<", f">\n<style>\n{svg_css}\n</style>\n<", svg, 1)
-
-    # TODO: insert the hover/click style javascript into the svg
-
     return svg
 
 
@@ -84,9 +61,9 @@ def get_graphviz_svg(dag):
     graph = Digraph(format="svg")
 
     # Create the nodes
-    for node in dag.get_node_dict():
-        graph.node(node, shape="box", style="rounded", id=node)
-        # TODO: format the node based on type of node
+    for name, node in dag.get_node_dict().items():
+        graph.node(node, id=node, **node.draw())
+        # TODO: add the icon image based on type of node
 
     # Create each node and its edges
     edge_kwargs = {"arrowsize": "0.7"}

@@ -6,7 +6,6 @@ easier to run sections of that DAG, perform cross-validation, serialize the
 DAG, and visualize the DAG.  Pipedown focuses on:
 
 * Testing: each node is defined as a
-# TODO
 
 Pipedown is NOT an ETL / data engineering / task scheduler tool - for that use
 something like Airflow, Argo, Dask, Prefect, etc.  You can do some basic and
