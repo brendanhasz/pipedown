@@ -3,8 +3,9 @@ from typing import Optional, Tuple
 import pandas as pd
 from catboost import CatBoostRegressor
 
+from pipedown.nodes.base import Model
 
-class CatBoostRegressorModel:
+class CatBoostRegressorModel(Model):
     """A CatBoost regression model
 
 

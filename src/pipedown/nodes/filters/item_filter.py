@@ -2,7 +2,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from pipedown.nodes.base.node import Node
+from pipedown.nodes.base import Node
 
 
 class ItemFilter(Node):

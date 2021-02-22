@@ -2,8 +2,10 @@ from typing import List, Optional, Tuple
 
 import pandas as pd
 
+from pipedown.nodes.base import Node
 
-class NullFallback:
+
+class NullFallback(Node):
     """Replaces missing values with values from a different column
 
     Parameters

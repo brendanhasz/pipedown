@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-from pipedown.nodes.base.node import Node
+from pipedown.nodes.base import Node
 
 
 class FeatureFilter(Node):
