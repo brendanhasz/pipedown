@@ -97,10 +97,13 @@ def remove_graphviz_style(svg: str):
 
     # Remove fill and stroke info from all polygons
     svg = svg.replace('fill="none" stroke="black" ', "")
+    svg = svg.replace('fill="none" stroke="#000000" ', "")
     svg = svg.replace('fill="black" stroke="black" ', "")
+    svg = svg.replace('fill="#000000" stroke="#000000" ', "")
 
     # Remove white background polygon
     svg = re.sub('<polygon fill="white".*?/>', "", svg)
+    svg = re.sub('<polygon fill="#ffffff".*?/>', "", svg)
 
     return svg
 
