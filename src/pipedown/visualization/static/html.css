@@ -21,7 +21,6 @@ body {
     padding: 15px;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
 .info-pane::-webkit-scrollbar {
     display: none;
 }
@@ -30,9 +29,16 @@ body {
     background-color: #6e7681;
 }
 
-.dag-viewer {
+#dag-viewer {
     background-color: #06090f;
     height: 100%;
+    overflow: hidden;
+}
+
+#dag-svg {
+    position: absolute;
+    width: 500px;
+    height: 500px;
 }
 
 .container {

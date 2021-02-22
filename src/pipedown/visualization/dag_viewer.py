@@ -15,11 +15,12 @@ def get_dag_viewer_html(dag):
 
     # Load static files
     html_css = get_static_file("html.css")
-    # TODO: pan / zoom javascript
+    pan_zoom_js = get_static_file("pan_zoom.js")
     main_html = get_static_file(
         "main.html",
         dag_name=type(dag).__name__,
         html_css=html_css,
+        pan_zoom_js=pan_zoom_js,
         dag_svg=dag_svg,
         info_pane_html=info_pane_html,
     )
@@ -58,8 +59,12 @@ def get_dag_svg(dag):
     svg = get_graphviz_svg(dag)
 
     # Get just the svg
-    # TODO: re.search("<svg(.*)</svg>", svg) wasn't working for some reason?
     svg = svg[svg.find("<svg") : svg.find("</svg>") + 6]
+
+    # Add preserveAspectRatio, and remove width and height
+    svg = re.sub('width=".*?" ', "", svg, 1)
+    svg = re.sub('height=".*?"', "", svg, 1)
+    svg = '<svg preserveAspectRatio="xMinYMin meet"' + svg[4:]
 
     # Remove graphviz-generated style
     svg = remove_graphviz_style(svg)
@@ -69,6 +74,8 @@ def get_dag_svg(dag):
 
     # Insert the style into the svg
     svg = re.sub(">.*?<", f">\n<style>\n{svg_css}\n</style>\n<", svg, 1)
+
+    # TODO: insert the hover/click style javascript into the svg
 
     return svg
 

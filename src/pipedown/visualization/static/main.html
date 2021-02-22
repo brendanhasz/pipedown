@@ -18,9 +18,12 @@
 
     <div class="separator"></div>
 
-    <div class="dag-viewer">
-        {{ dag_svg }}
+    <div id="dag-viewer">
+        <div id="dag-svg" ondragstart="return false">
+            {{ dag_svg }}
+        </div>
     </div>
 
 </body>
 </html>
+<script>{{ pan_zoom_js }}</script>
