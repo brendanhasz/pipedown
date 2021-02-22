@@ -43,7 +43,12 @@ def get_info_pane_html(dag):
 
     # Get the descriptions for each node
     for name, node in dag.get_node_dict().items():
-        html += get_static_file("info_div.html", id=name+"-info", name=name, description=node.__doc__.split("\n\n"))
+        html += get_static_file(
+            "info_div.html",
+            id=name + "-info",
+            name=name,
+            description=node.__doc__.split("\n\n"),
+        )
 
     return html
 
