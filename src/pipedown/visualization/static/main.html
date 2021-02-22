@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ dag_name }}</title>
+    <style>{{ html_css }}</style>
+    <link r="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="info-pane-container">
+        <div class="info-pane">
+            {{ info_pane_html }}
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="dag-viewer">
+        {{ dag_svg }}
+    </div>
+
+</body>
+</html>

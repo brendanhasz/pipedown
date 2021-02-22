@@ -1,0 +1,42 @@
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0px;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    color: #b1bac4;
+}
+
+.info-pane-container {
+    overflow: hidden;
+    height: 100%
+}
+
+.info-pane {
+    background-color: #161b22;
+    overflow-y: scroll;
+    height: 100%;
+    padding: 15px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.info-pane::-webkit-scrollbar {
+    display: none;
+}
+
+.separator {
+    background-color: #6e7681;
+}
+
+.dag-viewer {
+    background-color: #06090f;
+    height: 100%;
+}
+
+.container {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 400px 2px auto;
+}

@@ -26,7 +26,8 @@ setup(
         "matplotlib >= 3.1.0",
         "numpy >= 1.17.0",
         "pandas >= 1.0.0",
-        "cloudpickle >= 1.3",
+        "graphviz >= 0.16",
+        "Jinja2 >= 2.11.0",
     ],
     extras_require={
         "dev": [

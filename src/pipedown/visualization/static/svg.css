@@ -1,0 +1,18 @@
+.node > path {
+    fill: #0d1117;
+    stroke: #30363d;
+}
+
+.node > polygon {
+    fill: #0d1117;
+    stroke: #30363d;
+}
+
+.edge {
+    fill: #30363d;
+    stroke: #30363d;
+}
+
+text {
+    fill: #b1bac4;
+}

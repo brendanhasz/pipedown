@@ -3,6 +3,6 @@ def save_dag(pipeline, filename: str):
     # TODO
 
 
-def load_pipeline(filename: str):
+def load_dag(filename: str):
     """Load a DAG from file"""
     # TODO

@@ -22,10 +22,6 @@ from pipedown.nodes.base.primary import Primary
 class DAG:
     """Abstract base class for a DAG"""
 
-    def __init__(self, name):
-        super().__init__(name)
-        self._nodes = None
-
     @abstractmethod
     def nodes(self) -> Dict[str, Node]:
         """Get a dict of node names and objects used in the DAG"""
@@ -51,16 +47,10 @@ class DAG:
     def instantiate_dag(self, mode: str):
         """Create nodes and connections between them"""
 
-        # Create the nodes if they don't already exist
-        if self._nodes is None:
-            self._nodes = self.nodes()
-
         # Assign names
-        for node, name in self._nodes:
-            node.name = name
+        # Assign names and clear pre-existing connections between nodes
 
-        # Clear pre-existing connections between nodes
-        for node in self._nodes:
+        for node in self.get_nodes():
             node.reset_children()
 
         # Create connections between nodes depending on mode
@@ -68,10 +58,10 @@ class DAG:
 
             # Get actual child and parent(s) objects
             child = self.get_node(child_name)
-            if isinstance(parent_names, str) and parent_names in self._nodes:
+            if isinstance(parent_names, str) and parent_names in self.get_node_dict():
                 parents = [self.get_node(parent_names)]
             elif isinstance(parent_names, list) and all(
-                p in self._nodes for p in parent_names
+                p in self.get_node_dict() for p in parent_names
             ):
                 parents = [self.get_node(p) for p in parent_names]
             elif (
@@ -89,13 +79,25 @@ class DAG:
             for parent in parents:
                 parent.add_children(child)
 
+    def initialize_nodes(self):
+        """Initialize the node objects"""
+        self._nodes = self.nodes()
+        for name, node in self._nodes.items():
+            node.name = name
+
+    def get_node_dict(self) -> Dict[str, Node]:
+        """Get a dict mapping node names to node objects"""
+        if not hasattr(self, "_nodes") or self._nodes is None:
+            self.initialize_nodes()
+        return self._nodes
+
     def get_nodes(self, node_type=Node) -> List[Node]:
         """Get a list of all nodes contained in this pipeline"""
-        return [n for n in self._nodes.values() if isinstance(n, node_type)]
+        return [n for n in self.get_node_dict().values() if isinstance(n, node_type)]
 
     def get_node(self, node_name: str):
         """Get a node in the pipeline by its name"""
-        return self._nodes[node_name]
+        return self.get_node_dict()[node_name]
 
     def get_primary(self) -> Node:
         """Get the primary node if it exists in the DAG"""
