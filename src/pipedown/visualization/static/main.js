@@ -72,6 +72,7 @@ var nodes = document.getElementsByClassName('node');
 for (var i = 0; i < nodes.length; i++) {
     nodes[i].addEventListener('mouseover', nodeMouseOver);
     nodes[i].addEventListener('mouseout', nodeMouseOut);
+    nodes[i].addEventListener('click', nodeMouseClick);
 }
 
 
@@ -82,4 +83,24 @@ function nodeMouseOver() {
 
 function nodeMouseOut() {
     this.classList.remove("node-highlight2");
+}
+
+function nodeMouseClick() {
+    clearNodeStyles();
+    this.classList.add("node-highlight1");
+    hide_all_info_divs();
+    show_info_div(this.id+"-info");
+}
+
+function canvasMouseClick() {
+    clearNodeStyles();
+    hide_all_info_divs();
+    show_info_div('dag-info');
+}
+
+function clearNodeStyles() {
+    var nodes = document.getElementsByClassName('node');
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].classList.remove("node-highlight1");
+    }
 }

@@ -62,7 +62,7 @@ def get_graphviz_svg(dag):
 
     # Create the nodes
     for name, node in dag.get_node_dict().items():
-        graph.node(node, id=node, **node.draw())
+        graph.node(name, id=name, **node.draw())
         # TODO: add the icon image based on type of node
 
     # Create each node and its edges

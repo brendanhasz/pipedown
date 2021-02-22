@@ -1,5 +1,5 @@
 from pipedown.dag import DAG
-from pipedown.nodes.base import Node, Model
+from pipedown.nodes.base import Model, Node
 from pipedown.visualization.dag_viewer import get_dag_viewer_html
 
 
@@ -14,6 +14,7 @@ class MyNode(Node):
     def run(self, X):
         return X
 
+
 class MyModel(Model):
     """This is the docstring for my node!
 
@@ -22,8 +23,11 @@ class MyModel(Model):
     And even more info here.
     """
 
-    def run(self, X):
-        return X
+    def fit(self, X, y):
+        pass
+
+    def predict(self, X):
+        return X.iloc[:, 0]
 
 
 class MyDAG(DAG):
