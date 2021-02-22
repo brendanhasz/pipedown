@@ -23,7 +23,7 @@ def get_info_pane_html(dag):
         "info_div.html",
         id="dag-info",
         name=type(dag).__name__,
-        description=type(dag).__doc__.split("\n\n"),
+        description=get_doc_paragraphs(dag),
     )
 
     # Get the descriptions for each node
@@ -32,10 +32,17 @@ def get_info_pane_html(dag):
             "info_div.html",
             id=name + "-info",
             name=name,
-            description=node.__doc__.split("\n\n"),
+            description=get_doc_paragraphs(node),
         )
 
     return html
+
+
+def get_doc_paragraphs(obj):
+    if obj.__doc__ is None:
+        return [""]
+    else:
+        return obj.__doc__.split("\n\n")
 
 
 def get_dag_svg(dag):
