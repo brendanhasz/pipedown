@@ -32,7 +32,6 @@ class Primary(Node):
     draw = square_box_highlight
 
     def __init__(self, x: List[str], y: str):
-        super().__init__()
         self.x = x
         self.y = y
 

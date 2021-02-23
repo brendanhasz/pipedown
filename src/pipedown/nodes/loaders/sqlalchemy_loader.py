@@ -23,7 +23,6 @@ class SqlAlchemyLoader(Loader):
     """
 
     def __init__(self, engine, query_filename, query_kwargs={}):
-        super().__init__()
         self.engine = engine
         self.query = self.format_query(query_filename, query_kwargs)
 

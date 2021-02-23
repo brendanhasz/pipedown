@@ -12,10 +12,6 @@ class Node(BaseNode):
 
     draw = rounded_box_fn_icon
 
-    def __init__(self):
-        self._parents = []
-        self._children = set()
-
     def fit(self, *args, **kwargs):
         pass
 
@@ -35,6 +31,9 @@ class Node(BaseNode):
     def num_parents(self) -> int:
         return len(self._parents)
 
+    def reset_parents(self) -> None:
+        self._parents = []
+
     def add_children(
         self, children: Union[List[BaseNode], Set[BaseNode], BaseNode]
     ):
@@ -43,11 +42,15 @@ class Node(BaseNode):
         for child in children:
             self._children.add(child)
 
-    def reset_children(self):
-        self._children = set()
-
     def get_children(self) -> Set[BaseNode]:
         return self._children
 
     def num_children(self) -> int:
         return len(self._children)
+
+    def reset_children(self) -> None:
+        self._children = set()
+
+    def reset_connections(self) -> None:
+        self.reset_parents()
+        self.reset_children()

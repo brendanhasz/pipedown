@@ -29,6 +29,7 @@ def test_node():
 
     # This *should* work
     node = MyNode()
+    node.reset_connections()
     assert len(node._parents) == 0
 
     X = pd.DataFrame()
@@ -63,6 +64,8 @@ def test_node():
     node2 = MyNode()
     node3 = MyNode()
     node4 = MyNode()
+    for n in [node2, node3, node4]:
+        n.reset_connections()
     node.set_parents(node2)
     assert isinstance(node.get_parents(), list)
     assert node2 in node.get_parents()

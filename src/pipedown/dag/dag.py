@@ -13,10 +13,7 @@ from pipedown.cross_validation.splitters import (
 )
 from pipedown.dag.dag_tools import run_dag
 from pipedown.dag.io import save_dag
-from pipedown.nodes.base.metric import Metric
-from pipedown.nodes.base.model import Model
-from pipedown.nodes.base.node import Node
-from pipedown.nodes.base.primary import Primary
+from pipedown.nodes.base import Primary, Node, Cache, Model, Metric
 
 
 class DAG:
@@ -47,9 +44,7 @@ class DAG:
     def instantiate_dag(self, mode: str):
         """Create nodes and connections between them"""
 
-        # Assign names
-        # Assign names and clear pre-existing connections between nodes
-
+        # Clear pre-existing connections between nodes
         for node in self.get_nodes():
             node.reset_children()
 
@@ -87,6 +82,7 @@ class DAG:
         self._nodes = self.nodes()
         for name, node in self._nodes.items():
             node.name = name
+            node.reset_connections()
 
     def get_node_dict(self) -> Dict[str, Node]:
         """Get a dict mapping node names to node objects"""
@@ -117,6 +113,11 @@ class DAG:
             raise RuntimeError(
                 "There are multiple Primary data sources in your DAG!"
             )
+
+    def clear_caches(self):
+        """Clear all cache nodes in the DAG"""
+        for cache in self.get_nodes(Cache):
+            cache.clear_cache()
 
     def cv_predict(
         self,

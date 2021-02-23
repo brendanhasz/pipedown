@@ -44,7 +44,6 @@ class CatBoostRegressorModel(Model):
     """
 
     def __init__(self, **kwargs):
-        super().__init__()
         self.model = CatBoostRegressor(**kwargs)
 
     def fit(self, X: pd.DataFrame, y: Optional[pd.Series]) -> None:

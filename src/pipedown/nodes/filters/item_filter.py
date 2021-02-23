@@ -6,8 +6,9 @@ from pipedown.nodes.base import Node
 
 
 class ItemFilter(Node):
+    """Filter datapoints down to a subset matching some condition"""
+
     def __init__(self, filter_function: Callable):
-        super().__init__()
         self.filter_function = filter_function
 
     def run(self, X: pd.DataFrame, y: Optional[pd.Series]):

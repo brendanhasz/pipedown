@@ -39,5 +39,5 @@ push-package:
 	twine upload dist/*
 
 clean:
-	rm -rf .pytest_cache docs/_html build dist src/pipedown.egg-info
+	rm -rf .pytest_cache catboost_info docs/_html build dist src/pipedown.egg-info
 	find . -type d -name __pycache__ -exec rm -rf {} \+

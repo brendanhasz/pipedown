@@ -24,6 +24,8 @@ def test_dag_eval_order_linear():
     c.name = "c"
     d = MyNode()
     d.name = "d"
+    for n in [a, b, c, d]:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -76,6 +78,9 @@ def test_dag_eval_order_divergence():
     e.name = "e"
     f = MyNode()
     f.name = "f"
+    nodes = [a, b, c, d, e, f]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -86,7 +91,6 @@ def test_dag_eval_order_divergence():
     c.add_children(e)
     f.set_parents(e)
     e.add_children(f)
-    nodes = [a, b, c, d, e, f]
 
     # Running a->f should not run d
     order = get_dag_eval_order("a", "f", nodes)
@@ -159,6 +163,9 @@ def test_dag_eval_order_multi_divergence():
     f.name = "f"
     g = MyNode()
     g.name = "g"
+    nodes = [a, b, c, d, e, f, g]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     c.set_parents(b)
@@ -171,7 +178,6 @@ def test_dag_eval_order_multi_divergence():
     e.add_children(f)
     g.set_parents(e)
     e.add_children(g)
-    nodes = [a, b, c, d, e, f, g]
 
     # Running a->f should not run d or g
     order = get_dag_eval_order("a", "f", nodes)
@@ -264,6 +270,9 @@ def test_dag_eval_order_multi_convergence():
     f.name = "f"
     g = MyNode()
     g.name = "g"
+    nodes = [a, b, c, d, e, f, g]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -274,7 +283,6 @@ def test_dag_eval_order_multi_convergence():
     b.add_children(f)
     g.set_parents(f)
     f.add_children(g)
-    nodes = [a, b, c, d, e, f, g]
 
     # Running the whole dag
     order = get_dag_eval_order(["a", "c", "e"], "g", nodes)
@@ -354,6 +362,9 @@ def test_dag_eval_order_divergence_and_convergence():
     k.name = "k"
     m = MyNode()
     m.name = "m"
+    nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -373,7 +384,6 @@ def test_dag_eval_order_divergence_and_convergence():
     i.add_children(k)
     j.add_children([k, m])
     m.set_parents(j)
-    nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
 
     # The whole enchilada
     order = get_dag_eval_order(["a", "c", "e"], ["g", "k", "m"], nodes)
@@ -468,6 +478,9 @@ def test_dag_eval_order_cycle():
     d.name = "d"
     e = MyNode()
     e.name = "e"
+    nodes = [a, b, c, d, e]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents([a, d])
     a.add_children(b)
     d.add_children([b, e])
@@ -476,7 +489,6 @@ def test_dag_eval_order_cycle():
     d.set_parents(c)
     c.add_children(d)
     e.set_parents(d)
-    nodes = [a, b, c, d, e]
 
     # Should raise runtime error if there's a cycle
     with pytest.raises(RuntimeError):
@@ -524,6 +536,9 @@ def test_run_dag_order():
     k.name = "k"
     m = ListAdder()
     m.name = "m"
+    nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
+    for n in nodes:
+        n.reset_connections()
     b.set_parents(a)
     a.add_children(b)
     d.set_parents([c, e])
@@ -543,7 +558,6 @@ def test_run_dag_order():
     i.add_children(k)
     j.add_children([k, m])
     m.set_parents(j)
-    nodes = [a, b, c, d, e, f, g, h, i, j, k, m]
 
     # The whole enchilada
     _ = run_dag({}, [], "train", nodes)
@@ -715,6 +729,8 @@ def test_run_dag_primary_branch():
     ft4 = FeatureTransformer("d", lambda x: x + 20)
     ft4.name = "ft4"
     nodes = [fc1, fc2, fc3, fj1, fj2, input1, ft0, p, fa1, ft1, ft2, ft3, ft4]
+    for n in nodes:
+        n.reset_connections()
 
     # fc1
     #     \
