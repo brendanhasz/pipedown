@@ -67,7 +67,12 @@ body {
     stroke: #30363d;
 }
 
-.edge {
+.edge > path {
+    fill: none;
+    stroke: #30363d;
+}
+
+.edge > polygon{
     fill: #30363d;
     stroke: #30363d;
 }
