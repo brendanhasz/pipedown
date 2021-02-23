@@ -45,6 +45,7 @@ setup(
             "twine >= 3.2.0",
             "wheel >= 0.34.2",
             "catboost",
+            "pyarrow",
         ],
     },
 )
