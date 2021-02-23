@@ -1,11 +1,13 @@
 from typing import Dict
+
 import pandas as pd
 
 from pipedown.nodes.base import Node
 
+
 class RenameFields(Node):
     """Rename fields / columns
-    
+
     Parameters
     ----------
     field_map : Dict[str, str]

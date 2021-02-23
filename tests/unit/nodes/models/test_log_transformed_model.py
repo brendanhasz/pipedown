@@ -14,7 +14,9 @@ def test_log_transformed_model():
     df["b"] = np.random.randn(10)
     df["c"] = np.exp(np.random.randn() * df["a"] + np.random.randn() * df["b"])
 
-    crm = LogTransformedModel(CatBoostRegressorModel(verbose=False, thread_count=1))
+    crm = LogTransformedModel(
+        CatBoostRegressorModel(verbose=False, thread_count=1)
+    )
 
     # Fit it
     crm.fit(df[["a", "b"]], df["c"])

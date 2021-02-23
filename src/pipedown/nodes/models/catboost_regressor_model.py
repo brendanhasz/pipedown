@@ -1,9 +1,10 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 import pandas as pd
 from catboost import CatBoostRegressor
 
 from pipedown.nodes.base import Model
+
 
 class CatBoostRegressorModel(Model):
     """A CatBoost regression model

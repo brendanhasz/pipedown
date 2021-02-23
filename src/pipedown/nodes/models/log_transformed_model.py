@@ -1,5 +1,4 @@
-from typing import Tuple, Optional
-
+import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base import Model
@@ -38,7 +37,7 @@ class LogTransformedModel(Model):
         log_y = np.log(y)
         self._mean = np.nanmean(log_y)
         self._std = np.nanstd(log_y)
-        self.base_model.fit(X, (log_y-self._mean)/self._std)
+        self.base_model.fit(X, (log_y - self._mean) / self._std)
 
     def predict(self, X: pd.DataFrame) -> pd.Series:
-        return np.exp(self.base_model.run(X, y)*self._std + self._mean)
+        return np.exp(self.base_model.predict(X) * self._std + self._mean)

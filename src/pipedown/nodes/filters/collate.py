@@ -2,6 +2,7 @@ import pandas as pd
 
 from pipedown.nodes.base import Node
 
+
 class Collate(Node):
     def run(self, *args):
         return (

@@ -7,10 +7,13 @@
     * Then, in run, load the data from the cache.
     * Cache nodes should have a clear_cache method which deletes the cache file/database/whatever method is being used.
     * Also, DAG should have a clear_caches method which runs clear_cache on every Cache node in the pipeline
+- Add a release -> push pypi package Github action, and release 0.0.2
 - ProcessPool cv_implementation
-- Visualization (exporting html/javascript of the viewer)
+- Implement commonly used nodes
+- Visualization improvements:
     * Initally show the DAG filling the dag-viewer div, centered vertically and horizontally
-
+    * Show inputs/outputs in info div (after node has been fit)
+    * Show code in info div (w link to github? maybe just have an optional class attribute w/ link to gh)
 
 
 So DAG implementation should go like this:

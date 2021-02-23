@@ -1,3 +1,4 @@
+from .cache import Cache
 from .input import Input
 from .loader import Loader
 from .metric import Metric
