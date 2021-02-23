@@ -67,10 +67,15 @@ def test_dag_viewer():
 
     assert isinstance(html, str)
 
+
+if __name__ == "__main__":
+
+    # Define some nodes
+    dag = MyDAG()
+
+    # Get the html
+    html = get_dag_viewer_html(dag)
+
     # Save the html
     with open("test_dag_html.html", "w") as fid:
         fid.write(html)
-
-
-if __name__ == "__main__":
-    test_dag_viewer()
