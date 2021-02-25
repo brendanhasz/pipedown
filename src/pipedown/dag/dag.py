@@ -13,7 +13,7 @@ from pipedown.cross_validation.splitters import (
 )
 from pipedown.dag.dag_tools import run_dag
 from pipedown.dag.io import save_dag
-from pipedown.nodes.base import Primary, Node, Cache, Model, Metric
+from pipedown.nodes.base import Cache, Metric, Model, Node, Primary
 
 
 class DAG:

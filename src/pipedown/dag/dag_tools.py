@@ -2,6 +2,7 @@ from copy import deepcopy
 from types import GeneratorType
 from typing import Any, Dict, List, Union
 
+from pipedown.nodes.base.cache import Cache
 from pipedown.nodes.base.input import Input
 from pipedown.nodes.base.primary import Primary
 
@@ -83,7 +84,10 @@ def get_dag_eval_order(
     visit_order = []
 
     def dfs_walk_reverse_post_order(node):
-        if node.name not in inputs:  # truncate the walk at inputs
+        if (  # truncate the walk at inputs and cached caches
+            node.name not in inputs
+            and not (isinstance(node, Cache) and node.is_cached())
+        ):
             for parent in node.get_parents():
                 if parent not in visited:
                     dfs_walk_reverse_post_order(parent)

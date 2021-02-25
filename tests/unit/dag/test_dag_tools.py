@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from pipedown.dag.dag_tools import get_dag_eval_order, run_dag
+from pipedown.nodes.base.cache import Cache
 from pipedown.nodes.base.input import Input
 from pipedown.nodes.base.node import Node
 from pipedown.nodes.base.primary import Primary
@@ -876,3 +877,111 @@ def test_run_dag_primary_branch():
     assert dag_outputs[0].loc[1, "b"] == 203.0
     assert dag_outputs[0].loc[0, "d"] == 14.0
     assert dag_outputs[0].loc[1, "d"] == 14.0
+
+
+def test_walk_ends_at_cache():
+    class TestCache(Cache):
+        def __init__(self):
+            self.d = None
+
+        def fit(self, d):
+            self.d = d
+
+        def run(self, d):
+            return self.d if d is None else d
+
+        def is_cached(self):
+            return self.d is not None
+
+        def clear_cache(self):
+            self.d = None
+
+    # a -> b -> f -> g
+    #        /
+    # c -> cache
+    #  /
+    # e
+    a = MyNode()
+    a.name = "a"
+    b = MyNode()
+    b.name = "b"
+    c = MyNode()
+    c.name = "c"
+    cache = TestCache()
+    cache.name = "cache"
+    e = MyNode()
+    e.name = "e"
+    f = MyNode()
+    f.name = "f"
+    g = MyNode()
+    g.name = "g"
+    nodes = [a, b, c, cache, e, f, g]
+    for n in nodes:
+        n.reset_connections()
+    b.set_parents(a)
+    a.add_children(b)
+    cache.set_parents([c, e])
+    c.add_children(cache)
+    e.add_children(cache)
+    f.set_parents([b, cache])
+    cache.add_children(f)
+    b.add_children(f)
+    g.set_parents(f)
+    f.add_children(g)
+
+    # Running the whole dag before fitting cache should run all nodes
+    order = get_dag_eval_order(["a", "c", "e"], "g", nodes)
+    assert isinstance(order, list)
+    assert len(order) == 7
+    assert a in order
+    assert b in order
+    assert c in order
+    assert cache in order
+    assert e in order
+    assert f in order
+    assert g in order
+    assert order[-1] is g
+    assert order[-2] is f
+    assert order.index(f) > order.index(b)
+    assert order.index(b) > order.index(a)
+    assert order.index(f) > order.index(cache)
+    assert order.index(cache) > order.index(c)
+    assert order.index(cache) > order.index(e)
+
+    # Running after fitting cache should not run nodes before cache
+    cache.fit("lala")
+    order = get_dag_eval_order(["a", "c", "e"], "g", nodes)
+    assert isinstance(order, list)
+    assert len(order) == 5
+    assert a in order
+    assert b in order
+    assert cache in order
+    assert c not in order
+    assert e not in order
+    assert f in order
+    assert g in order
+    assert order[-1] is g
+    assert order[-2] is f
+    assert order.index(f) > order.index(b)
+    assert order.index(b) > order.index(a)
+    assert order.index(f) > order.index(cache)
+
+    # After clearing the cache, should again run all nodes
+    cache.clear_cache()
+    order = get_dag_eval_order(["a", "c", "e"], "g", nodes)
+    assert isinstance(order, list)
+    assert len(order) == 7
+    assert a in order
+    assert b in order
+    assert c in order
+    assert cache in order
+    assert e in order
+    assert f in order
+    assert g in order
+    assert order[-1] is g
+    assert order[-2] is f
+    assert order.index(f) > order.index(b)
+    assert order.index(b) > order.index(a)
+    assert order.index(f) > order.index(cache)
+    assert order.index(cache) > order.index(c)
+    assert order.index(cache) > order.index(e)
