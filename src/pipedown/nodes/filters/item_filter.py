@@ -3,6 +3,7 @@ from typing import Callable, Optional
 import pandas as pd
 
 from pipedown.nodes.base import Node
+from pipedown.utils.empty import EMPTY
 
 
 class ItemFilter(Node):
@@ -13,4 +14,9 @@ class ItemFilter(Node):
 
     def run(self, X: pd.DataFrame, y: Optional[pd.Series]):
         ix = self.filter_function(X)
-        return X.loc[ix, :], y.loc[ix]
+        if ix.sum() == 0:
+            return EMPTY
+        elif y is None:
+            return X.loc[ix, :], None
+        else:
+            return X.loc[ix, :], y.loc[ix]

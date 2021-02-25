@@ -32,14 +32,14 @@ class DAG:
     ):
         """Fit part of or the whole pipeline"""
         self.instantiate_dag("train")
-        run_dag(inputs, outputs, self.get_nodes())
+        run_dag(inputs, outputs, "train", self.get_nodes())
 
     def run(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
         """Run part of or the whole pipeline"""
         self.instantiate_dag("test")
-        return run_dag(inputs, outputs, self.get_nodes())
+        return run_dag(inputs, outputs, "test", self.get_nodes())
 
     def instantiate_dag(self, mode: str):
         """Create nodes and connections between them"""
@@ -49,7 +49,7 @@ class DAG:
             node.reset_children()
 
         # Create connections between nodes depending on mode
-        for child_name, parent_names in self.edges():
+        for child_name, parent_names in self.edges().items():
 
             # Get actual child and parent(s) objects
             child = self.get_node(child_name)

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Union
 from pipedown.nodes.base.cache import Cache
 from pipedown.nodes.base.input import Input
 from pipedown.nodes.base.primary import Primary
+from pipedown.utils.empty import EMPTY
 
 
 def run_dag(
@@ -109,6 +110,8 @@ def get_dag_eval_order(
 
 
 def run_node(node, node_inputs, mode):
+    if node_inputs is EMPTY:  # don't run nodes with empty input
+        return EMPTY
     if isinstance(node, Primary):
         return node.run(node_inputs, mode)
     if isinstance(node_inputs, GeneratorType):

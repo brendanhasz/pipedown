@@ -1,0 +1,124 @@
+import pandas as pd
+
+from pipedown.dag import DAG
+from pipedown.nodes.base import Input, Node, Primary
+from pipedown.nodes.filters import Collate, ItemFilter
+
+
+def test_dag_eval_order_with_empty():
+
+    run_list = []
+
+    class MyNode(Node):
+        def __init__(self, name):
+            self._name = name
+
+        def run(self, X, y):
+            run_list.append(self._name)
+            return X + 1, y
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "primary": Primary(["a", "b"], "c"),
+                "item_filter_1": ItemFilter(lambda x: x["a"] < 3),
+                "item_filter_2": ItemFilter(
+                    lambda x: (x["a"] >= 3) & (x["a"] < 10)
+                ),
+                "my_node1": MyNode("A"),
+                "my_node2": MyNode("B"),
+                "collate": Collate(),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "input"},
+                "item_filter_1": "primary",
+                "item_filter_2": "primary",
+                "my_node1": "item_filter_1",
+                "my_node2": "item_filter_2",
+                "collate": ["my_node1", "my_node2"],
+            }
+
+    # Data split into two separate branches then recombined
+    df = pd.DataFrame()
+    df["a"] = [1, 2, 3, 4, 5, 6]
+    df["b"] = [10, 20, 30, 40, 50, 60]
+    df["c"] = [10, 20, 30, 40, 50, 60]
+    my_dag = MyDAG()
+    xo, yo = my_dag.run({"input": df})
+    assert len(run_list) == 2
+    assert "A" in run_list
+    assert "B" in run_list
+    assert isinstance(xo, pd.DataFrame)
+    assert xo.shape[0] == 6
+    assert xo.shape[1] == 2
+    assert xo["a"].iloc[0] == 2
+    assert xo["a"].iloc[1] == 3
+    assert xo["a"].iloc[2] == 4
+    assert xo["a"].iloc[3] == 5
+    assert xo["a"].iloc[4] == 6
+    assert xo["a"].iloc[5] == 7
+    assert xo["b"].iloc[0] == 11
+    assert xo["b"].iloc[1] == 21
+    assert xo["b"].iloc[2] == 31
+    assert xo["b"].iloc[3] == 41
+    assert xo["b"].iloc[4] == 51
+    assert xo["b"].iloc[5] == 61
+
+    # Reset the run list
+    while len(run_list) > 0:
+        run_list.pop()
+
+    # Data split into two separate branches but one is never executed
+    df = pd.DataFrame()
+    df["a"] = [1, 2, 1, 2, 1, 2]
+    df["b"] = [10, 20, 30, 40, 50, 60]
+    df["c"] = [10, 20, 30, 40, 50, 60]
+    my_dag = MyDAG()
+    xo, yo = my_dag.run({"input": df})
+    assert len(run_list) == 1
+    assert "A" in run_list
+    assert "B" not in run_list
+    assert isinstance(xo, pd.DataFrame)
+    assert xo.shape[0] == 6
+    assert xo.shape[1] == 2
+    assert xo["a"].iloc[0] == 2
+    assert xo["a"].iloc[1] == 3
+    assert xo["a"].iloc[2] == 2
+    assert xo["a"].iloc[3] == 3
+    assert xo["a"].iloc[4] == 2
+    assert xo["a"].iloc[5] == 3
+    assert xo["b"].iloc[0] == 11
+    assert xo["b"].iloc[1] == 21
+    assert xo["b"].iloc[2] == 31
+    assert xo["b"].iloc[3] == 41
+    assert xo["b"].iloc[4] == 51
+    assert xo["b"].iloc[5] == 61
+
+    # Reset the run list
+    while len(run_list) > 0:
+        run_list.pop()
+
+    # Same but now there's less data at the end
+    df = pd.DataFrame()
+    df["a"] = [1, 2, 1, 2, 10, 20]
+    df["b"] = [10, 20, 30, 40, 50, 60]
+    df["c"] = [10, 20, 30, 40, 50, 60]
+    my_dag = MyDAG()
+    xo, yo = my_dag.run({"input": df})
+    assert len(run_list) == 1
+    assert "A" in run_list
+    assert "B" not in run_list
+    assert isinstance(xo, pd.DataFrame)
+    assert xo.shape[0] == 4
+    assert xo.shape[1] == 2
+    assert xo["a"].iloc[0] == 2
+    assert xo["a"].iloc[1] == 3
+    assert xo["a"].iloc[2] == 2
+    assert xo["a"].iloc[3] == 3
+    assert xo["b"].iloc[0] == 11
+    assert xo["b"].iloc[1] == 21
+    assert xo["b"].iloc[2] == 31
+    assert xo["b"].iloc[3] == 41
