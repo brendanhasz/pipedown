@@ -1,6 +1,7 @@
 import pandas as pd
 
 from pipedown.nodes.base.loader import Loader
+from pipedown.utils.urls import get_node_url
 
 
 class SqlAlchemyLoader(Loader):
@@ -21,6 +22,8 @@ class SqlAlchemyLoader(Loader):
     query_kwargs : dict
         Dictionary of arguments to be used to template the query
     """
+
+    CODE_URL = get_node_url("loaders/sqlalchemy_loader.py")
 
     def __init__(self, engine, query_filename, query_kwargs={}):
         self.engine = engine

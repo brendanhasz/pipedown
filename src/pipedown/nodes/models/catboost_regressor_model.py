@@ -4,6 +4,7 @@ import pandas as pd
 from catboost import CatBoostRegressor
 
 from pipedown.nodes.base import Model
+from pipedown.utils.urls import get_node_url
 
 
 class CatBoostRegressorModel(Model):
@@ -42,6 +43,8 @@ class CatBoostRegressorModel(Model):
     )
     ```
     """
+
+    CODE_URL = get_node_url("models/catboost_regressor_model.py")
 
     def __init__(self, **kwargs):
         self.model = CatBoostRegressor(**kwargs)

@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 import pandas as pd
 
 from pipedown.nodes.base import Node
+from pipedown.utils.urls import get_node_url
 
 
 class NullFallback(Node):
@@ -19,6 +20,8 @@ class NullFallback(Node):
         Number of times to perform the replacements sequentially (doing
         repeated times will propagate the replacements)
     """
+
+    CODE_URL = get_node_url("transforms/null_fallback.py")
 
     def __init__(self, fallback_list: List[Tuple[str, str]], n: int = 1):
         super().__init__()

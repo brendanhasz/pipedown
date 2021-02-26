@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base.node import Node
+from pipedown.utils.urls import get_node_url
 
 
 class Imputer(Node):
@@ -20,6 +21,8 @@ class Imputer(Node):
         * mean: fill missing values with the mean value for that feature
         * median: fill missing values with the median value for that feature
     """
+
+    CODE_URL = get_node_url("transforms/imputer.py")
 
     continuous_methods = {
         "mean": np.nanmean,

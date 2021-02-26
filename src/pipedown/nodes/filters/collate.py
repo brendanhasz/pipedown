@@ -2,10 +2,13 @@ import pandas as pd
 
 from pipedown.nodes.base import Node
 from pipedown.utils.empty import is_empty
+from pipedown.utils.urls import get_node_url
 
 
 class Collate(Node):
     """Collate multiple data streams into a single one"""
+
+    CODE_URL = get_node_url("filters/collate.py")
 
     def run(self, *args):
 

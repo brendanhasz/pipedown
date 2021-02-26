@@ -3,6 +3,7 @@ from typing import List, Optional
 import pandas as pd
 
 from pipedown.nodes.base.loader import Loader
+from pipedown.utils.urls import get_node_url
 
 
 class CsvLoader(Loader):
@@ -15,6 +16,8 @@ class CsvLoader(Loader):
     columns : List[str]
         Columns to load
     """
+
+    CODE_URL = get_node_url("loaders/csv_loader.py")
 
     def __init__(self, filename: str, columns: Optional[List[str]], **kwargs):
         self.filename = filename

@@ -3,6 +3,7 @@ from typing import Dict
 import pandas as pd
 
 from pipedown.nodes.base import Node
+from pipedown.utils.urls import get_node_url
 
 
 class RenameFields(Node):
@@ -15,6 +16,8 @@ class RenameFields(Node):
         the old/existing field name, and the corresponding values should be the
         new names.
     """
+
+    CODE_URL = get_node_url("transforms/rename_fields.py")
 
     def __init__(self, field_map: Dict[str, str]):
         self.field_map = field_map

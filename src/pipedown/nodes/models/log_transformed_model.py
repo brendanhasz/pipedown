@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base import Model
+from pipedown.utils.urls import get_node_url
 
 
 class LogTransformedModel(Model):
@@ -27,6 +28,8 @@ class LogTransformedModel(Model):
     )
     ```
     """
+
+    CODE_URL = get_node_url("models/log_transformed_model.py")
 
     def __init__(self, base_model):
         self.base_model = base_model

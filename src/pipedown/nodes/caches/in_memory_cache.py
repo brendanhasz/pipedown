@@ -3,10 +3,13 @@ from typing import Optional
 import pandas as pd
 
 from pipedown.nodes.base import Cache
+from pipedown.utils.urls import get_node_url
 
 
 class InMemoryCache(Cache):
     """Cache data in memory"""
+
+    CODE_URL = get_node_url("caches/in_memory_cache.py")
 
     def __init__(self):
         self._data = None

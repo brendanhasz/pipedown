@@ -5,6 +5,7 @@ from typing import Optional
 import pandas as pd
 
 from pipedown.nodes.base import Cache
+from pipedown.utils.urls import get_node_url
 
 
 class FeatherCache(Cache):
@@ -14,6 +15,8 @@ class FeatherCache(Cache):
 
     * [pyarrow](https://pypi.org/project/pyarrow/)
     """
+
+    CODE_URL = get_node_url("caches/feather_cache.py")
 
     def __init__(self, filename: Optional[str] = None):
         if filename is not None:
