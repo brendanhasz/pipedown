@@ -11,11 +11,6 @@ class MyNode(Node):
     And even more info here.
     """
 
-    CODE_URL = (
-        "http://github.com/brendanhasz/pipedown/blob/main/"
-        "src/pipedown/nodes/base/node.py"
-    )
-
     def run(self, X):
         return X
 

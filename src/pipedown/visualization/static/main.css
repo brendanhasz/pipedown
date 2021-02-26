@@ -54,6 +54,26 @@ code {
     border-radius: 10px;
 }
 
+.button {
+    background-color: #21262d;
+    color: #b1bac4;
+    border: 2px solid #30363d;
+    border-radius: 5px;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0d1117;
+    color: #b1bac4;
+}
+
 
 /* SVG style */
 
