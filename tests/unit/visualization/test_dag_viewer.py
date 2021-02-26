@@ -11,6 +11,11 @@ class MyNode(Node):
     And even more info here.
     """
 
+    CODE_URL = (
+        "http://github.com/brendanhasz/pipedown/blob/main/"
+        "src/pipedown/nodes/base/node.py"
+    )
+
     def run(self, X):
         return X
 
@@ -22,6 +27,11 @@ class MyModel(Model):
 
     And even more info here.
     """
+
+    CODE_URL = (
+        "http://github.com/brendanhasz/pipedown/blob/main/"
+        "src/pipedown/nodes/base/model.py"
+    )
 
     def fit(self, X, y):
         pass
@@ -37,6 +47,11 @@ class MyDAG(DAG):
 
     And even more info here.
     """
+
+    CODE_URL = (
+        "http://github.com/brendanhasz/pipedown/blob/main/"
+        "src/pipedown/dag/dag.py"
+    )
 
     def nodes(self):
         return {

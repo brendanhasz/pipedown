@@ -1,5 +1,6 @@
 import os
 import re
+import inspect
 
 from graphviz import Digraph
 from jinja2 import Template
@@ -11,6 +12,8 @@ def get_dag_viewer_html(dag):
         dag_name=type(dag).__name__,
         css=get_static_file("main.css"),
         js=get_static_file("main.js"),
+        highlight_css=get_static_file("highlight.css"),
+        highlight_js=get_static_file("highlight.js"),
         dag_svg=get_dag_svg(dag),
         info_pane_html=get_info_pane_html(dag),
     )
@@ -24,6 +27,8 @@ def get_info_pane_html(dag):
         id="dag-info",
         name=type(dag).__name__,
         description=get_doc_paragraphs(dag),
+        code_url=getattr(dag, 'CODE_URL', None),
+        code=inspect.getsource(dag.__class__),
     )
 
     # Get the descriptions for each node
@@ -33,6 +38,8 @@ def get_info_pane_html(dag):
             id=name + "-info",
             name=name,
             description=get_doc_paragraphs(node),
+            code_url=getattr(node, 'CODE_URL', None),
+            code=inspect.getsource(node.__class__),
         )
 
     return html
