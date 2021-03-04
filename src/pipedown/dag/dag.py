@@ -32,6 +32,8 @@ class DAG:
     ):
         """Fit part of or the whole pipeline"""
         self.instantiate_dag("train")
+        if len(outputs) == 0:  # default outputs are nodes w/o children
+            outputs = self.get_default_outputs("train")
         run_dag(inputs, outputs, "train", self.get_nodes())
 
     def run(
@@ -39,6 +41,8 @@ class DAG:
     ):
         """Run part of or the whole pipeline"""
         self.instantiate_dag("test")
+        if len(outputs) == 0:  # default outputs are nodes w/o children
+            outputs = self.get_default_outputs("train")
         return run_dag(inputs, outputs, "test", self.get_nodes())
 
     def instantiate_dag(self, mode: str):
@@ -83,6 +87,19 @@ class DAG:
         for name, node in self._nodes.items():
             node.name = name
             node.reset_connections()
+
+    def get_default_outputs(self, mode):
+        """Get the default outputs (nodes w/o children)"""
+        outputs = []
+        primary_parents = self.edges()[self.get_primary().name]
+        for node in self.get_nodes():
+            if (
+                node.num_children() == 0
+                and node.name != primary_parents["train"]
+                and node.name != primary_parents["test"]
+            ):
+                outputs.append(node.name)
+        return outputs
 
     def get_node_dict(self) -> Dict[str, Node]:
         """Get a dict mapping node names to node objects"""

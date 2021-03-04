@@ -1,11 +1,10 @@
+import inspect
 import os
 import re
-import inspect
 
+import markdown
 from graphviz import Digraph
 from jinja2 import Template
-import markdown
-import inspect
 
 
 def get_dag_viewer_html(dag):
@@ -29,7 +28,7 @@ def get_info_pane_html(dag):
         id="dag-info",
         name=type(dag).__name__,
         description=get_docs(dag),
-        code_url=getattr(dag, 'CODE_URL', None),
+        code_url=getattr(dag, "CODE_URL", None),
         code=inspect.getsource(dag.__class__),
     )
 
@@ -40,7 +39,7 @@ def get_info_pane_html(dag):
             id=name + "-info",
             name=name,
             description=get_docs(node),
-            code_url=getattr(node, 'CODE_URL', None),
+            code_url=getattr(node, "CODE_URL", None),
             code=inspect.getsource(node.__class__),
         )
 
