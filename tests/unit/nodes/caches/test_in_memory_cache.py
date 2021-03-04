@@ -29,6 +29,18 @@ def test_in_memory_cache():
     assert dfo.iloc[1, 1] == "b"
     assert dfo.iloc[2, 1] == "c"
 
+    # Should also work if passed no args
+    dfo = imc.run()
+    assert isinstance(dfo, pd.DataFrame)
+    assert dfo.shape[0] == 3
+    assert dfo.shape[1] == 2
+    assert dfo.iloc[0, 0] == 1
+    assert dfo.iloc[1, 0] == 2
+    assert dfo.iloc[2, 0] == 3
+    assert dfo.iloc[0, 1] == "a"
+    assert dfo.iloc[1, 1] == "b"
+    assert dfo.iloc[2, 1] == "c"
+
     imc.clear_cache()
 
     df2 = pd.DataFrame()

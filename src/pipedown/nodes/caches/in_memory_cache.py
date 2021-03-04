@@ -18,7 +18,7 @@ class InMemoryCache(Cache):
         if self._data is None:
             self._data = data
 
-    def run(self, data: Optional[pd.DataFrame]) -> pd.DataFrame:
+    def run(self, data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         if self.is_cached():
             return self._data
         else:

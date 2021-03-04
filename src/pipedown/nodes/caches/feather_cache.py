@@ -28,7 +28,7 @@ class FeatherCache(Cache):
         if not self.is_cached():
             data.reset_index(drop=True).to_feather(self.filename)
 
-    def run(self, data: Optional[pd.DataFrame]) -> pd.DataFrame:
+    def run(self, data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         if self.is_cached():
             return pd.read_feather(self.filename)
         else:
