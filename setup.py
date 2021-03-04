@@ -24,11 +24,12 @@ setup(
     ],
     zip_safe=False,
     install_requires=[
-        "matplotlib >= 3.1.0",
-        "numpy >= 1.17.0",
+        "matplotlib >= 3.0.0",
+        "numpy >= 1.10.0",
         "pandas >= 1.0.0",
         "graphviz >= 0.16",
-        "Jinja2 >= 2.11.0",
+        "Jinja2 >= 2.0.0",
+        "markdown >= 3.3.0",
     ],
     extras_require={
         "dev": [

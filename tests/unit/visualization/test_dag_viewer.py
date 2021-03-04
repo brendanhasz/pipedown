@@ -9,6 +9,14 @@ class MyNode(Node):
     More info here.
 
     And even more info here.
+
+    Additional Features
+    -------------------
+
+    * **AnotherFeature** (_dtype_) Some description
+    * **SomeOtherFeature** (_dtype_) Some description
+
+    And `some_inline_code_stuff_maybe`
     """
 
     def run(self, X):

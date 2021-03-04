@@ -4,6 +4,8 @@ import inspect
 
 from graphviz import Digraph
 from jinja2 import Template
+import markdown
+import inspect
 
 
 def get_dag_viewer_html(dag):
@@ -26,7 +28,7 @@ def get_info_pane_html(dag):
         "info_div.html",
         id="dag-info",
         name=type(dag).__name__,
-        description=get_doc_paragraphs(dag),
+        description=get_docs(dag),
         code_url=getattr(dag, 'CODE_URL', None),
         code=inspect.getsource(dag.__class__),
     )
@@ -37,7 +39,7 @@ def get_info_pane_html(dag):
             "info_div.html",
             id=name + "-info",
             name=name,
-            description=get_doc_paragraphs(node),
+            description=get_docs(node),
             code_url=getattr(node, 'CODE_URL', None),
             code=inspect.getsource(node.__class__),
         )
@@ -45,11 +47,11 @@ def get_info_pane_html(dag):
     return html
 
 
-def get_doc_paragraphs(obj):
+def get_docs(obj):
     if obj.__doc__ is None:
-        return [""]
+        return ""
     else:
-        return obj.__doc__.split("\n\n")
+        return markdown.markdown(inspect.cleandoc(obj.__doc__))
 
 
 def get_dag_svg(dag):

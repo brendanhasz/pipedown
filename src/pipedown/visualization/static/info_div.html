@@ -1,13 +1,15 @@
 <div id="{{ id }}" class="info-div">
     <h1>{{ name }}</h1>
-    {% for p in description %}
-        <p>{{ p }}</p>
-    {% endfor %}
+    {{ description }}
     <h2>Code</h2>
     {% if code_url %}
     <a class="button" href="{{ code_url }}" target="_blank">View on GitHub</a>
     {% endif %}
-    <pre><code class="language-python">
+    <a class="button" id="{{ id }}-code-show">Show code here</a>
+    <a class="button" id="{{ id }}-code-hide">Hide code</a>
+    <div class="code" id="{{ id }}-code">
+        <pre><code class="language-python">
 {{ code }}
-    </code></pre>
+        </code></pre>
+    </div>
 </div>

@@ -65,6 +65,33 @@ function hide_all_info_divs() {
     }
 }
 
+/* Show + hide code buttons */
+var info_divs = document.getElementsByClassName('info-div');
+for (var i = 0; i < info_divs.length; i++) {
+    var id = info_divs[i].id
+    var show_button = document.getElementById(id.concat('-code-show'));
+    var hide_button = document.getElementById(id.concat('-code-hide'));
+    var code_div = document.getElementById(id.concat('-code'));
+    code_div.style.display = "none";  //hidden by default
+    hide_button.style.display = "none";  //hidden by default
+    show_button.addEventListener('click', showCode);
+    hide_button.addEventListener('click', hideCode);
+}
+
+function showCode(event) {
+    event.preventDefault();
+    this.style.display = "none";
+    document.getElementById(this.id.slice(0, -5)).style.display = "block";
+    document.getElementById(this.id.slice(0, -4).concat('hide')).style.display = "inline-block";
+}
+
+function hideCode(event) {
+    event.preventDefault();
+    this.style.display = "none";
+    document.getElementById(this.id.slice(0, -5)).style.display = "none";
+    document.getElementById(this.id.slice(0, -4).concat('show')).style.display = "inline-block";
+}
+
 
 /* SVG style */
 
