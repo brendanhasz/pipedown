@@ -14,7 +14,7 @@ class InMemoryCache(Cache):
     def __init__(self):
         self._data = None
 
-    def fit(self, data: pd.DataFrame) -> None:
+    def fit(self, data: Optional[pd.DataFrame] = None) -> None:
         if self._data is None:
             self._data = data
 

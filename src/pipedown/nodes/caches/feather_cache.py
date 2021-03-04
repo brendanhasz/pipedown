@@ -24,7 +24,7 @@ class FeatherCache(Cache):
         else:
             self.filename = f"FeatherCache-{uuid.uuid4()}.feather"
 
-    def fit(self, data: pd.DataFrame) -> None:
+    def fit(self, data: Optional[pd.DataFrame] = None) -> None:
         if not self.is_cached():
             data.reset_index(drop=True).to_feather(self.filename)
 

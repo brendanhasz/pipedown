@@ -17,6 +17,9 @@ def test_in_memory_cache():
 
     assert imc.is_cached()
 
+    # Fit should run fine when passed no args
+    imc.fit(df)
+
     dfo = imc.run(None)
 
     assert isinstance(dfo, pd.DataFrame)

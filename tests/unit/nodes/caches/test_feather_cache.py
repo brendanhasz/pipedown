@@ -24,6 +24,9 @@ def test_feather_cache():
     assert os.path.isfile("test-filename.feather")
     assert fc.is_cached()
 
+    # Fit should run fine when passed no args
+    fc.fit()
+
     dfo = fc.run(None)
 
     assert isinstance(dfo, pd.DataFrame)
