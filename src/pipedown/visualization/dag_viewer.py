@@ -28,7 +28,7 @@ def get_info_pane_html(dag):
         id="dag-info",
         name=type(dag).__name__,
         description=get_docs(dag),
-        code_url=getattr(dag, "CODE_URL", None),
+        code_url=get_code_url(dag, dag),
         code=inspect.getsource(dag.__class__),
     )
 
@@ -39,11 +39,24 @@ def get_info_pane_html(dag):
             id=name + "-info",
             name=name,
             description=get_docs(node),
-            code_url=getattr(node, "CODE_URL", None),
+            code_url=get_code_url(dag, node),
             code=inspect.getsource(node.__class__),
         )
 
     return html
+
+
+def get_code_url(dag, node):
+    if hasattr(node, "CODE_URL"):
+        return node.CODE_URL
+    elif hasattr(dag, "BASE_CODE_URL") and hasattr(dag, "BASE_CODE_PATH"):
+        path = inspect.getfile(node.__class__)
+        if path.startswith(dag.BASE_CODE_PATH):
+            return dag.BASE_CODE_URL + path[len(dag.BASE_CODE_PATH) :]
+        else:
+            return None
+    else:
+        return None
 
 
 def get_docs(obj):
