@@ -93,6 +93,8 @@ def to_md(doc):
                 else:  # continued description of previous parameter
                     new_doc += f"{line.strip()} "
 
+            new_doc += "\n\n"
+
         else:  # not a parameters section
             new_doc += section + "\n\n"
 
