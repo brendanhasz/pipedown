@@ -50,7 +50,40 @@ def get_docs(obj):
     if obj.__doc__ is None:
         return ""
     else:
-        return markdown.markdown(inspect.cleandoc(obj.__doc__))
+        return markdown.markdown(to_md(inspect.cleandoc(obj.__doc__)))
+
+
+def to_md(doc):
+    """Convert Parameter-like sections to markdown"""
+    # TODO: blech there's gotta be a better way to do this w/ regex + nested
+    # groups, but regex is gross and I'm lazy
+    new_doc = ""
+    for section in doc.split("\n\n"):
+
+        lines = section.split("\n")
+
+        if (  # this section is a parameter section
+            len(lines) > 3
+            and len(set(lines[1])) == 1
+            and list(set(lines[1]))[0] == "-"
+        ):
+
+            new_doc += lines[0] + "\n" + lines[1] + "\n"
+
+            for line in lines[2:]:
+                if line[0] != " ":  # new parameter
+                    if ":" in line:  # has a dtype
+                        param, dtype = line.split(" : ")
+                        new_doc += f"\n* **{param}** (*{dtype}*) "
+                    else:  # no dtype
+                        new_doc += f"\n* **{line}** "
+                else:  # continued description of previous parameter
+                    new_doc += f"{line.strip()} "
+
+        else:  # not a parameters section
+            new_doc += section + "\n\n"
+
+    return new_doc
 
 
 def get_dag_svg(dag):

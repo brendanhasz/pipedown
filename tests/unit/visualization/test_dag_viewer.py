@@ -12,11 +12,19 @@ class MyNode(Node):
 
     Additional Features
     -------------------
+    AnotherFeature : dtype
+        Some description
+        and another line which should be on the same line
+    SomeOtherFeature : other_dtype
+        Some more description
 
-    * **AnotherFeature** (_dtype_) Some description
-    * **SomeOtherFeature** (_dtype_) Some description
-
-    And `some_inline_code_stuff_maybe`
+    Another section
+    ---------------
+    AnotherFeature : dtype
+        Some description
+        and another line which should be on the same line
+    SomeOtherFeature : other_dtype
+        Some more description
     """
 
     def run(self, X):
