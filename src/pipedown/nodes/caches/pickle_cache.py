@@ -14,13 +14,18 @@ class PickleCache(Cache):
         self.filename = filename
 
     def fit(self, *args):
-        with open(self.filename, "wb") as fid:
-            pickle.dump(args, fid)
+        if len(args) > 0:
+            with open(self.filename, "wb") as fid:
+                pickle.dump(args, fid)
 
     def run(self, *args):
         if self.is_cached():
             with open(self.filename, "rb") as fid:
-                return pickle.load(fid)
+                args_out = pickle.load(fid)
+            if isinstance(args_out, tuple) and len(args_out) == 1:
+                return args_out[0]
+            else:
+                return args_out
         else:
             return args
 
