@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="pipedown",
-    version="0.0.7",
+    version="0.0.8",
     author="Brendan Hasz",
     author_email="winsto99@gmail.com",
     description="A data science pipelining framework for Python",

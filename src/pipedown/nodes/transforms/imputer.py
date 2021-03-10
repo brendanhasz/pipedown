@@ -1,6 +1,5 @@
 from typing import List, Tuple, Union
 
-import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base.node import Node
@@ -25,8 +24,8 @@ class Imputer(Node):
     CODE_URL = get_node_url("transforms/imputer.py")
 
     continuous_methods = {
-        "mean": np.nanmean,
-        "median": np.nanmedian,
+        "mean": lambda c: c.mean(),
+        "median": lambda c: c.median(),
     }
 
     categorical_methods = {
