@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Union
 from pipedown.nodes.base.cache import Cache
 from pipedown.nodes.base.input import Input
 from pipedown.nodes.base.primary import Primary
-from pipedown.utils.empty import is_empty
+from pipedown.utils.empty import EMPTY, is_empty
 
 
 def run_dag(
