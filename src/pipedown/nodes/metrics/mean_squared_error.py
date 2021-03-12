@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 from pipedown.nodes.base.metric import Metric
@@ -9,7 +8,7 @@ class MeanSquaredError(Metric):
     CODE_URL = get_node_url("metrics/mean_squared_error.py")
 
     def run(self, y_pred: pd.Series, y_true: pd.Series):
-        return np.mean(np.square(y_pred - y_true))
+        return ((y_pred - y_true).pow(2)).mean()
 
     def get_metric_name(self):
         return "mean_squared_error"
