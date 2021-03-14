@@ -70,8 +70,10 @@ class RandomSplitter(CrossValidationSplitter):
             ix_1 = X.shape[0]
         else:
             ix_1 = int((i + 1) * self.n_per_fold)
-        ix_val = self.ix[ix_0:ix_1]
-        ix_train = ~ix_val
+        val_mask = np.zeros(X.shape[0], bool)
+        val_mask[ix_0:ix_1] = True
+        ix_val = self.ix[val_mask]
+        ix_train = self.ix[~val_mask]
         return (
             X.iloc[ix_train, :],
             y.iloc[ix_train],
