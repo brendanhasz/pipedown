@@ -66,9 +66,9 @@ class DAG:
         -------
         output_data : Union[Any, Dict[str, Any]]
             If `outputs` was a str (a single output node), simply returns the
-            output data from that node.  If `outputs` was a list of str, returns
-            a Dict whose keys are output node names, and values are the output
-            data for that node.
+            output data from that node.  If `outputs` was a list of str,
+            returns a Dict whose keys are output node names, and values are the
+            output data for that node.
         """
         self.instantiate_dag("test")
         if len(outputs) == 0:  # default outputs are nodes w/o children
@@ -92,9 +92,9 @@ class DAG:
         -------
         output_data : Union[Any, Dict[str, Any]]
             If `outputs` was a str (a single output node), simply returns the
-            output data from that node.  If `outputs` was a list of str, returns
-            a Dict whose keys are output node names, and values are the output
-            data for that node.
+            output data from that node.  If `outputs` was a list of str,
+            returns a Dict whose keys are output node names, and values are the
+            output data for that node.
         """
         self.instantiate_dag("train")
         if len(outputs) == 0:  # default outputs are nodes w/o children
