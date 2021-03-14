@@ -4,11 +4,11 @@ import pandas as pd
 from pipedown.cross_validation.splitters import RandomSplitter
 
 
-def test_random_splitter_uneven():
+def test_random_splitter():
 
     X = pd.DataFrame()
-    X['a'] = np.random.randn(12)
-    X['b'] = np.random.randn(12)
+    X["a"] = np.random.randn(12)
+    X["b"] = np.random.randn(12)
     y = pd.Series(np.random.randn(12))
 
     rs = RandomSplitter(n_folds=4, random_seed=11111)
@@ -40,9 +40,9 @@ def test_random_splitter_uneven():
 def test_random_splitter_uneven():
 
     X = pd.DataFrame()
-    X['a'] = np.random.randn(12)
-    X['b'] = np.random.randn(12)
-    X['c'] = np.random.randn(12)
+    X["a"] = np.random.randn(12)
+    X["b"] = np.random.randn(12)
+    X["c"] = np.random.randn(12)
     y = pd.Series(np.random.randn(12))
 
     rs = RandomSplitter()
