@@ -30,8 +30,21 @@ class DAG:
 
     def fit(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
-    ):
-        """Fit part of or the whole pipeline"""
+    ) -> None:
+        """Fit part of or the whole pipeline
+
+        Parameters
+        ----------
+        inputs : Dict[str, Any]
+            Dict of the input data.  Keys should be node names, and values
+            should be the data to use as inputs to those nodes.
+        outputs : Union[str, List[str]]
+            List of output nodes.
+
+        Returns
+        -------
+        None
+        """
         self.instantiate_dag("train")
         if len(outputs) == 0:  # default outputs are nodes w/o children
             outputs = self.get_default_outputs("train")
@@ -40,11 +53,54 @@ class DAG:
     def run(
         self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
     ):
-        """Run part of or the whole pipeline"""
+        """Run part of or the whole pipeline
+
+        Parameters
+        ----------
+        inputs : Dict[str, Any]
+            Dict of the input data.  Keys should be node names, and values
+            should be the data to use as inputs to those nodes.
+        outputs : Union[str, List[str]]
+            List of output nodes.
+
+        Returns
+        -------
+        output_data : Union[Any, Dict[str, Any]]
+            If `outputs` was a str (a single output node), simply returns the
+            output data from that node.  If `outputs` was a list of str,
+            returns a Dict whose keys are output node names, and values are the
+            output data for that node.
+        """
         self.instantiate_dag("test")
         if len(outputs) == 0:  # default outputs are nodes w/o children
             outputs = self.get_default_outputs("train")
         return run_dag(inputs, outputs, "test", self.get_nodes())
+
+    def fit_run(
+        self, inputs: Dict[str, Any] = {}, outputs: Union[str, List[str]] = []
+    ) -> Union[Any, Dict[str, Any]]:
+        """Fit and run part of or the whole pipeline
+
+        Parameters
+        ----------
+        inputs : Dict[str, Any]
+            Dict of the input data.  Keys should be node names, and values
+            should be the data to use as inputs to those nodes.
+        outputs : Union[str, List[str]]
+            List of output nodes.
+
+        Returns
+        -------
+        output_data : Union[Any, Dict[str, Any]]
+            If `outputs` was a str (a single output node), simply returns the
+            output data from that node.  If `outputs` was a list of str,
+            returns a Dict whose keys are output node names, and values are the
+            output data for that node.
+        """
+        self.instantiate_dag("train")
+        if len(outputs) == 0:  # default outputs are nodes w/o children
+            outputs = self.get_default_outputs("train")
+        return run_dag(inputs, outputs, "train", self.get_nodes())
 
     def instantiate_dag(self, mode: str):
         """Create nodes and connections between them"""
