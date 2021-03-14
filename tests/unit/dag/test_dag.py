@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -274,3 +276,57 @@ def test_dag_eval_order_with_empty():
     assert xo["b"].iloc[1] == 21
     assert xo["b"].iloc[2] == 31
     assert xo["b"].iloc[3] == 41
+
+
+def test_dag_get_and_save_html():
+
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = np.random.randn(10)
+            df["b"] = np.random.randn(10)
+            df["c"] = np.random.randn(10)
+            return df
+
+    class MyNode(Node):
+        def __init__(self, name):
+            self._name = name
+
+        def fit(self, X, y):
+            fit_list.append(self._name)
+            self.x_mean = X.mean()
+
+        def run(self, X, y):
+            run_list.append(self._name)
+            return X + self.x_mean, y
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "my_node1": MyNode("A"),
+                "my_node2": MyNode("B"),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "my_node1": "primary",
+                "my_node2": "my_node1",
+            }
+
+    # Create the DAG
+    my_dag = MyDAG()
+
+    # Get the HTML
+    html = my_dag.get_html()
+    assert isinstance(html, str)
+
+    # Save the html
+    if os.path.exists("test_dag_viewer.html"):
+        os.remove("test_dag_viewer.html")
+    assert not os.path.exists("test_dag_viewer.html")
+    my_dag.save_html('test_dag_viewer.html')
+    assert os.path.exists("test_dag_viewer.html")
