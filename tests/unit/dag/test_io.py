@@ -1,9 +1,8 @@
-import numpy as np
 import pandas as pd
 
 from pipedown.dag import DAG, load_dag
 from pipedown.nodes.base import Input, Node, Primary
-from pipedown.nodes.filters import Collate, ItemFilter
+from pipedown.nodes.filters import ItemFilter
 
 
 def test_dag_save_and_load(is_close):
@@ -63,7 +62,7 @@ def test_dag_save_and_load(is_close):
     my_dag.save("test_dag_2.pkl")
 
     # Load it back in
-    loaded_dag = load_dag('test_dag_2.pkl')
+    loaded_dag = load_dag("test_dag_2.pkl")
     assert isinstance(loaded_dag, DAG)
     assert is_close(loaded_dag.get_node("my_node1").x_mean["a"], 2)
     assert is_close(loaded_dag.get_node("my_node1").x_mean["b"], 7)

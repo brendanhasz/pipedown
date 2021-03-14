@@ -66,10 +66,15 @@ class RandomSplitter(CrossValidationSplitter):
             Validation features for fold i
         """
         ix_0 = int(i * self.n_per_fold)
-        if i+1 == self.get_n_folds():
+        if i + 1 == self.get_n_folds():
             ix_1 = X.shape[0]
         else:
-            ix_1 = int((i+1) * self.n_per_fold)
+            ix_1 = int((i + 1) * self.n_per_fold)
         ix_val = self.ix[ix_0:ix_1]
         ix_train = ~ix_val
-        return X.iloc[ix_train, :], y.iloc[ix_train], X.iloc[ix_val, :], y.iloc[ix_val]
+        return (
+            X.iloc[ix_train, :],
+            y.iloc[ix_train],
+            X.iloc[ix_val, :],
+            y.iloc[ix_val],
+        )

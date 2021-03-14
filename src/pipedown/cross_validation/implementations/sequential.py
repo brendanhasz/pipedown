@@ -12,7 +12,12 @@ class Sequential(CrossValidationImplementation):
     """Sequential, single-threaded, cross validation"""
 
     def run(
-        self, dag, cv_data: Dict[str, pd.DataFrame], outputs, splitter: CrossValidationSplitter, verbose: bool = False,
+        self,
+        dag,
+        cv_data: Dict[str, pd.DataFrame],
+        outputs,
+        splitter: CrossValidationSplitter,
+        verbose: bool = False,
     ) -> List[Any]:
         """Run the cross-validation
 
@@ -42,11 +47,11 @@ class Sequential(CrossValidationImplementation):
         for i in range(splitter.get_n_folds()):
 
             # Get data for this fold
-            x_train, y_train, x_val, y_val = deepcopy(splitter.get_fold(X, y, i))
+            x_train, y_train, x_val, y_val = deepcopy(
+                splitter.get_fold(X, y, i)
+            )
 
             # Run the pipeline for this fold
-            output_values.append(
-                dag.run(inputs=inputs, outputs=outputs)
-            )
+            output_values.append(dag.run(inputs=inputs, outputs=outputs))
 
         return output_values

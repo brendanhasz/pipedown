@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 
@@ -238,7 +238,9 @@ class DAG:
         cv_data, original_index = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
-        predictions = cv_implementation.run(self, cv_data, outputs, cv_splitter, verbose=verbose)
+        predictions = cv_implementation.run(
+            self, cv_data, outputs, cv_splitter, verbose=verbose
+        )
 
         # Return the collated predictions
         if isinstance(outputs, (list, set)) and len(outputs) > 1:
@@ -257,6 +259,7 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
+        cv_on: Optional[Union[str, List[str]]] = None,
         cv_splitter: CrossValidationSplitter = RandomSplitter(),
         cv_implementation: CrossValidationImplementation = Sequential(),
         verbose=False,
@@ -270,6 +273,8 @@ class DAG:
             whole pipeline up to the metric node(s) specified in `outputs`.
         outputs : List[str]
             List of names of the metric nodes to evaluate.
+        cv_on : Optional[Union[str, List[str]]]
+            Node(s) on which to cross-validate.  By default uses the Primary.
         cv_splitter : CrossValidationSplitter object
             Cross-validation scheme to use.
         cv_implementation : CrossValidationImplementation object
@@ -316,7 +321,9 @@ class DAG:
         cv_data, _ = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
-        metrics = cv_implementation.run(self, cv_data, outputs, cv_splitter, verbose=verbose)
+        metrics = cv_implementation.run(
+            self, cv_data, outputs, cv_splitter, verbose=verbose
+        )
 
         # Convert the metrics into a dataframe
         if len(outputs) == 1:  # only a single output, metrics is a list

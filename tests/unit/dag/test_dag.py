@@ -279,7 +279,6 @@ def test_dag_eval_order_with_empty():
 
 
 def test_dag_get_and_save_html():
-
     class MyLoader(Node):
         def run(self, *args):
             df = pd.DataFrame()
@@ -293,11 +292,9 @@ def test_dag_get_and_save_html():
             self._name = name
 
         def fit(self, X, y):
-            fit_list.append(self._name)
             self.x_mean = X.mean()
 
         def run(self, X, y):
-            run_list.append(self._name)
             return X + self.x_mean, y
 
     class MyDAG(DAG):
@@ -328,5 +325,5 @@ def test_dag_get_and_save_html():
     if os.path.exists("test_dag_viewer.html"):
         os.remove("test_dag_viewer.html")
     assert not os.path.exists("test_dag_viewer.html")
-    my_dag.save_html('test_dag_viewer.html')
+    my_dag.save_html("test_dag_viewer.html")
     assert os.path.exists("test_dag_viewer.html")
