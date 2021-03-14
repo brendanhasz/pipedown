@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
 from .cross_validation_splitter import CrossValidationSplitter
@@ -19,37 +20,56 @@ class RandomSplitter(CrossValidationSplitter):
     def __init__(self, n_folds: int = 5, random_seed: int = 12345):
         self.n_folds = n_folds
         self.random_seed = random_seed
+        self.ix = None
 
-    def setup(self, df: pd.DataFrame) -> None:
+    def setup(self, X: pd.DataFrame, y: pd.Series) -> None:
         """Set up the cross-validation
 
         Parameters
         ----------
-        df : pd.DataFrame
-            The entire dataset
+        X : pd.DataFrame
+            Features for the entire dataset
+        y : pd.Series
+            Target for the entire dataset
         """
-        # TODO
+        rng = np.random.default_rng(self.random_seed)
+        self.ix = rng.permutation(X.shape[0])
+        self.n = X.shape[0]
+        self.n_per_fold = np.floor(X.shape[0] / self.get_n_folds())
 
     def get_n_folds(self):
         return self.n_folds
 
     def get_fold(
-        self, df: pd.DataFrame, i: int
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        self, X: pd.DataFrame, y: pd.Series, i: int
+    ) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
         """Get one fold of data.
 
         Parameters
         ----------
-        df : pd.DataFrame
-            The entire dataset
+        X : pd.DataFrame
+            Features for the entire dataset
+        y : pd.Series
+            Target for the entire dataset
         i : int
             Index of the cross-validation fold to return.
 
         Returns
         -------
-        df_train : pd.DataFrame
-            Training dataset for fold i
-        df_val : pd.DataFrame
-            Validation dataset for fold i
+        x_train : pd.DataFrame
+            Training features for fold i
+        y_train : pd.DataFrame
+            Training target for fold i
+        x_val : pd.DataFrame
+            Validation features for fold i
+        y_val : pd.DataFrame
+            Validation features for fold i
         """
-        # TODO
+        ix_0 = int(i * self.n_per_fold)
+        if i+1 == self.get_n_folds():
+            ix_1 = X.shape[0]
+        else:
+            ix_1 = int((i+1) * self.n_per_fold)
+        ix_val = self.ix[ix_0:ix_1]
+        ix_train = ~ix_val
+        return X.iloc[ix_train, :], y.iloc[ix_train], X.iloc[ix_val, :], y.iloc[ix_val]

@@ -12,13 +12,15 @@ class CrossValidationSplitter(ABC):
         pass
 
     @abstractmethod
-    def setup(self, df: pd.DataFrame) -> None:
+    def setup(self, X: pd.DataFrame, y: pd.Series) -> None:
         """Set up the cross-validation
 
         Parameters
         ----------
-        df : pd.DataFrame
-            The entire dataset
+        X : pd.DataFrame
+            Features for the entire dataset
+        y : pd.Series
+            Target for the entire dataset
         """
 
     @abstractmethod
@@ -27,21 +29,27 @@ class CrossValidationSplitter(ABC):
 
     @abstractmethod
     def get_fold(
-        self, df: pd.DataFrame, i: int
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        self, X: pd.DataFrame, y: pd.Series, i: int
+    ) -> Tuple[pd.DataFrame, pd.Series, pd.DataFrame, pd.Series]:
         """Get one fold of data.
 
         Parameters
         ----------
-        df : pd.DataFrame
-            The entire dataset
+        X : pd.DataFrame
+            Features for the entire dataset
+        y : pd.Series
+            Target for the entire dataset
         i : int
             Index of the cross-validation fold to return.
 
         Returns
         -------
-        df_train : pd.DataFrame
-            Training dataset for fold i
-        df_val : pd.DataFrame
-            Validation dataset for fold i
+        x_train : pd.DataFrame
+            Training features for fold i
+        y_train : pd.DataFrame
+            Training target for fold i
+        x_val : pd.DataFrame
+            Validation features for fold i
+        y_val : pd.DataFrame
+            Validation features for fold i
         """

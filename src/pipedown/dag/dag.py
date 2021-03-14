@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 import pandas as pd
 
@@ -14,6 +14,7 @@ from pipedown.cross_validation.splitters import (
 from pipedown.dag.dag_tools import run_dag
 from pipedown.dag.io import save_dag
 from pipedown.nodes.base import Cache, Metric, Model, Node, Primary
+from pipedown.visualization.dag_viewer import get_dag_viewer_html
 
 
 class DAG:
@@ -140,6 +141,7 @@ class DAG:
         self,
         inputs: Dict[str, Any] = {},
         outputs: Union[str, List[str]] = [],
+        cv_on: Optional[Union[str, List[str]]] = None,
         cv_splitter: CrossValidationSplitter = RandomSplitter(),
         cv_implementation: CrossValidationImplementation = Sequential(),
         verbose=False,
@@ -153,6 +155,8 @@ class DAG:
             up to the model node(s) specified in `outputs`.
         outputs : List[str]
             List of names of the model nodes from which to get predictions.
+        cv_on : Optional[Union[str, List[str]]]
+            Node(s) on which to cross-validate.  By default uses the Primary.
         cv_splitter : CrossValidationSplitter object
             Cross-validation scheme to use.
         cv_implementation : CrossValidationImplementation object
@@ -174,11 +178,11 @@ class DAG:
         if len(outputs) == 0:
             outputs = [n.name for n in self.get_nodes(Model)]
 
-        # Run the pipeline up to the Primary
-        df, original_index = self.run_to_primary(inputs)
+        # Run the pipeline up to the node to cross validate on
+        cv_data, original_index = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
-        predictions = cv_implementation.run(self, df, outputs, cv_splitter)
+        predictions = cv_implementation.run(self, cv_data, outputs, cv_splitter, verbose=verbose)
 
         # Return the collated predictions
         if isinstance(outputs, (list, set)) and len(outputs) > 1:
@@ -252,11 +256,11 @@ class DAG:
         if len(outputs) == 0:
             outputs = [n.name for n in self.get_nodes(Metric)]
 
-        # Run the pipeline up to the Primary
-        df, _ = self.run_to_primary(inputs)
+        # Run the pipeline up to the node to cross validate on
+        cv_data, _ = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
-        metrics = cv_implementation.run(self, df, outputs, cv_splitter)
+        metrics = cv_implementation.run(self, cv_data, outputs, cv_splitter, verbose=verbose)
 
         # Convert the metrics into a dataframe
         if len(outputs) == 1:  # only a single output, metrics is a list
@@ -277,16 +281,15 @@ class DAG:
         # Return the metrics as a dataframe
         return pd.DataFrame.from_records(metrics)
 
-    def run_to_primary(self, inputs):
-        """Run the pipeline up to the Primary"""
-        primary_name = self.get_primary().name
-        if primary_name in inputs:  # data for primary is already computed
-            df = inputs[primary_name]
-        else:  # not already computed - so we have to run the pipeline
-            df = self.run(inputs=inputs, outputs=[primary_name])
-        original_index = df.index
-        df = df.reset_index(inplace=True, drop=True)
-        return df, original_index
+    def run_to_cv_node(self, inputs, cv_on):
+        """Run the pipeline up to the node to cross validate on"""
+        if cv_on is None:
+            cv_on = self.get_primary().name
+        X, y = self.fit_run(inputs=inputs, outputs=[cv_on])
+        original_index = X.index
+        X = X.reset_index(inplace=True, drop=True)
+        y = y.reset_index(inplace=True, drop=True)
+        return {cv_on: (X, y)}, original_index
 
     def save(self, filename: str):
         """Serialize the entire pipeline"""
@@ -294,7 +297,7 @@ class DAG:
 
     def get_html(self):
         """Get html for the dashboard displaying the pipeline"""
-        # TODO
+        return get_dag_viewer_html(self)
 
     def save_html(self, filename: str):
         """Save an html file with the dashboard displaying the pipeline"""
