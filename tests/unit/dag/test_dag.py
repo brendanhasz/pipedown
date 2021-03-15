@@ -7,6 +7,7 @@ from pipedown.cross_validation.splitters import RandomSplitter
 from pipedown.dag import DAG
 from pipedown.nodes.base import Input, Model, Node, Primary
 from pipedown.nodes.filters import Collate, ItemFilter
+from pipedown.nodes.metrics import MeanSquaredError
 
 
 def test_dag_fit_run_and_fitrun():
@@ -390,6 +391,84 @@ def test_cv_predict():
     assert predictions["my_model"].iloc[5] == 19
 
 
+def test_cv_predict_with_cv_on():
+
+    fit_list = []
+    run_list = []
+
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = [1, 2, 3, 4, 5, 6]
+            df["b"] = [7, 8, 9, 10, 11, 12]
+            df["c"] = [13, 14, 15, 16, 17, 18]
+            return df
+
+    class MyNode(Node):
+        def __init__(self, name):
+            self._name = name
+
+        def fit(self, X, y):
+            fit_list.append(self._name)
+
+        def run(self, X, y):
+            run_list.append(self._name)
+            return X, y
+
+    class MyModel(Model):
+        def __init__(self, name, add):
+            self._name = name
+            self._add = add
+
+        def fit(self, X, y):
+            fit_list.append(self._name)
+
+        def predict(self, X):
+            run_list.append(self._name)
+            return X["a"] + X["b"] + self._add
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "my_node1": MyNode("A"),
+                "my_node2": MyNode("B"),
+                "my_model": MyModel("C", 1),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "my_node1": "primary",
+                "my_node2": "my_node1",
+                "my_model": "my_node2",
+            }
+
+    # Instantiate dag
+    my_dag = MyDAG()
+
+    # Call cv_predict with defaults
+    cv_splitter = RandomSplitter(n_folds=2)
+    predictions = my_dag.cv_predict(cv_splitter=cv_splitter, cv_on="my_node1")
+
+    assert isinstance(predictions, pd.DataFrame)
+    assert predictions.shape[0] == 6
+    assert predictions.shape[1] == 2
+
+    assert isinstance(fit_list, list)
+    assert isinstance(run_list, list)
+    assert len(fit_list) == 5
+    assert len(run_list) == 9
+    expected_fit_list = ["A", "B", "C", "B", "C"]
+    expected_run_list = ["A", "B", "C", "B", "C", "B", "C", "B", "C"]
+    for i in range(5):
+        assert fit_list[i] == expected_fit_list[i]
+    for i in range(9):
+        assert run_list[i] == expected_run_list[i]
+
+
 def test_cv_predict_multiple_models():
     class MyLoader(Node):
         def run(self, *args):
@@ -467,3 +546,154 @@ def test_cv_predict_multiple_models():
     assert predictions["my_model3"].iloc[3] == 17
     assert predictions["my_model3"].iloc[4] == 19
     assert predictions["my_model3"].iloc[5] == 21
+
+
+# TODO: cv_predict with custom cv_on
+
+
+def test_cv_metric(is_close):
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = [1, 2, 3, 4, 5, 6]
+            df["b"] = [7, 8, 9, 10, 11, 12]
+            df["c"] = [13, 14, 15, 16, 17, 18]
+            return df
+
+    class MyModel(Model):
+        def __init__(self, add):
+            self._add = add
+
+        def fit(self, X, y):
+            pass
+
+        def predict(self, X):
+            return X["a"] + X["b"] + self._add
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "my_model": MyModel(1),
+                "my_metric": MeanSquaredError(),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "my_model": "primary",
+                "my_metric": "my_model",
+            }
+
+    # Instantiate dag
+    my_dag = MyDAG()
+
+    # Call cv_metric with defaults
+    cv_splitter = RandomSplitter(n_folds=2)
+    metrics = my_dag.cv_metric(cv_splitter=cv_splitter)
+
+    assert isinstance(metrics, pd.DataFrame)
+    assert metrics.shape[0] == 2
+    assert metrics.shape[1] == 4
+    assert "model_name" in metrics
+    assert "metric_name" in metrics
+    assert "fold" in metrics
+    assert "metric_value" in metrics
+    assert metrics["model_name"].iloc[0] == "my_model"
+    assert metrics["model_name"].iloc[1] == "my_model"
+    assert metrics["metric_name"].iloc[0] == "mean_squared_error"
+    assert metrics["metric_name"].iloc[1] == "mean_squared_error"
+    assert metrics["fold"].iloc[0] == 0
+    assert metrics["fold"].iloc[1] == 1
+    assert is_close(
+        (metrics["metric_value"].iloc[0] + metrics["metric_value"].iloc[1])
+        / 2,
+        (4 * 4 + 3 * 3 + 2 * 2 + 1 + 0 + 1) / 6,
+    )
+
+
+def test_cv_metric_multiple_metrics(is_close):
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = [1, 2, 3, 4, 5, 6]
+            df["b"] = [7, 8, 9, 10, 11, 12]
+            df["c"] = [13, 14, 15, 16, 17, 18]
+            return df
+
+    class MyModel(Model):
+        def __init__(self, add):
+            self._add = add
+
+        def fit(self, X, y):
+            pass
+
+        def predict(self, X):
+            return X["a"] + X["b"] + self._add
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "item_filter_1": ItemFilter(lambda x: x["a"] < 4),
+                "item_filter_2": ItemFilter(lambda x: x["a"] >= 4),
+                "my_model1": MyModel(1),
+                "my_model2": MyModel(2),
+                "my_model3": MyModel(3),
+                "collate": Collate(),
+                "my_metric1": MeanSquaredError(),
+                "my_metric2": MeanSquaredError(),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "item_filter_1": "primary",
+                "item_filter_2": "primary",
+                "my_model1": "item_filter_1",
+                "my_model2": "item_filter_2",
+                "collate": ["my_model1", "my_model2"],
+                "my_model3": "primary",
+                "my_metric1": "collate",
+                "my_metric2": "my_model3",
+            }
+
+    # Instantiate dag
+    my_dag = MyDAG()
+
+    # Call cv_metric with defaults
+    cv_splitter = RandomSplitter(n_folds=2)
+    metrics = my_dag.cv_metric(cv_splitter=cv_splitter)
+
+    assert isinstance(metrics, pd.DataFrame)
+    assert metrics.shape[0] == 4
+    assert metrics.shape[1] == 4
+    assert "model_name" in metrics
+    assert "metric_name" in metrics
+    assert "fold" in metrics
+    assert "metric_value" in metrics
+    assert metrics["model_name"].iloc[0] == "collate"
+    assert metrics["model_name"].iloc[1] == "collate"
+    assert metrics["model_name"].iloc[2] == "my_model3"
+    assert metrics["model_name"].iloc[3] == "my_model3"
+    assert metrics["metric_name"].iloc[0] == "mean_squared_error"
+    assert metrics["metric_name"].iloc[1] == "mean_squared_error"
+    assert metrics["metric_name"].iloc[2] == "mean_squared_error"
+    assert metrics["metric_name"].iloc[3] == "mean_squared_error"
+    assert metrics["fold"].iloc[0] == 0
+    assert metrics["fold"].iloc[1] == 1
+    assert metrics["fold"].iloc[2] == 0
+    assert metrics["fold"].iloc[3] == 1
+
+    assert is_close(
+        metrics["metric_value"].iloc[:2].mean(),
+        (4 * 4 + 3 * 3 + 2 * 2 + 0 + 1 + 2 * 2) / 6,
+    )
+    assert is_close(
+        metrics["metric_value"].iloc[2:].mean(),
+        (2 * 2 + 1 + 0 + 1 + 2 * 2 + 3 * 3) / 6,
+    )

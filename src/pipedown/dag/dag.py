@@ -377,7 +377,7 @@ class DAG:
                 )
 
         # Return the metrics as a dataframe
-        return pd.DataFrame.from_records(metrics)
+        return pd.DataFrame.from_records(metric_list)
 
     def run_to_cv_node(self, inputs, cv_on):
         """Run the pipeline up to the node to cross validate on"""
