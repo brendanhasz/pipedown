@@ -32,7 +32,7 @@ def run_dag(
             raise RuntimeError(f"No input supplied for {node.name}")
 
         # Get node's inputs
-        if node.num_parents() == 0:
+        if node.name in inputs:
             node_inputs = inputs.get(node.name)
         elif node.num_parents() == 1:
             parent_name = node.get_parents()[0].name

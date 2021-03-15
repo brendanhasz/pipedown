@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Any, Dict, List
+from typing import Any, List, Union
 
 import pandas as pd
 
@@ -14,8 +14,10 @@ class Sequential(CrossValidationImplementation):
     def run(
         self,
         dag,
-        cv_data: Dict[str, pd.DataFrame],
-        outputs,
+        cv_on: str,
+        X: pd.DataFrame,
+        y: pd.Series,
+        outputs: Union[str, List[str]],
         splitter: CrossValidationSplitter,
         verbose: bool = False,
     ) -> List[Any]:
@@ -25,23 +27,25 @@ class Sequential(CrossValidationImplementation):
         ----------
         dag : pipedown.dag.DAG
             The DAG on which to perform cross validation
-        cv_data : Dict[str, Tuple[pd.DataFrame, pd.Series]]
-            Input data to the nodes on which to cross-validate.
-        output : Union[str, List[str]]
+        cv_on : str
+            Name of the node on whose outputs to cross-validate.
+        X : pd.DataFrame
+            Feature values output by cv_on node.
+        y : pd.Series
+            Target values output by cv_on node.
+        outputs : Union[str, List[str]]
             Name(s) of the output node(s)
         splitter : CrossValidationSplitter object
             The splitter to use
+        verbose : bool
+            Whether to print info each fold
         """
-
-        # Get inputs
-        cv_on = next(iter(cv_data))
-        X = cv_data[cv_on][0]
-        y = cv_data[cv_on][1]
-        inputs = {c.name: (X, y) for c in dag.get_node(cv_on).get_children()}
 
         # Set up the splitter
         output_values = []
         splitter.setup(X, y)
+        dag.instantiate_dag("train")
+        cv_on_children = dag.get_node(cv_on).get_children()
 
         # Run each fold sequentially
         for i in range(splitter.get_n_folds()):
@@ -51,7 +55,12 @@ class Sequential(CrossValidationImplementation):
                 splitter.get_fold(X, y, i)
             )
 
-            # Run the pipeline for this fold
-            output_values.append(dag.run(inputs=inputs, outputs=outputs))
+            # Fit the DAG on training data for this fold
+            train_inputs = {c.name: (x_train, y_train) for c in cv_on_children}
+            dag.fit(inputs=train_inputs, outputs=outputs)
+
+            # Run the pipeline on validation data for this fold
+            val_inputs = {c.name: (x_val, y_val) for c in cv_on_children}
+            output_values.append(dag.run(inputs=val_inputs, outputs=outputs))
 
         return output_values

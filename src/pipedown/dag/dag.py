@@ -235,11 +235,11 @@ class DAG:
             outputs = [n.name for n in self.get_nodes(Model)]
 
         # Run the pipeline up to the node to cross validate on
-        cv_data, original_index = self.run_to_cv_node(inputs, cv_on)
+        X, y, original_index = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
         predictions = cv_implementation.run(
-            self, cv_data, outputs, cv_splitter, verbose=verbose
+            self, cv_on, X, y, outputs, cv_splitter, verbose=verbose
         )
 
         # Return the collated predictions
@@ -318,11 +318,11 @@ class DAG:
             outputs = [n.name for n in self.get_nodes(Metric)]
 
         # Run the pipeline up to the node to cross validate on
-        cv_data, _ = self.run_to_cv_node(inputs, cv_on)
+        X, y, _ = self.run_to_cv_node(inputs, cv_on)
 
         # Run the cross-validation
         metrics = cv_implementation.run(
-            self, cv_data, outputs, cv_splitter, verbose=verbose
+            self, cv_on, X, y, outputs, cv_splitter, verbose=verbose
         )
 
         # Convert the metrics into a dataframe
@@ -352,7 +352,7 @@ class DAG:
         original_index = X.index
         X = X.reset_index(inplace=True, drop=True)
         y = y.reset_index(inplace=True, drop=True)
-        return {cv_on: (X, y)}, original_index
+        return X, y, original_index
 
     def save(self, filename: str):
         """Serialize the entire pipeline"""
