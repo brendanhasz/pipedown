@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -14,7 +13,6 @@ def test_plot_metrics():
     metrics["metric_value"] = np.square(np.random.randn(6))
 
     plot_metrics(metrics)
-    plt.show()
 
 
 def test_plot_metrics_multiple_metrics():
@@ -26,4 +24,3 @@ def test_plot_metrics_multiple_metrics():
     metrics["metric_value"] = np.square(np.random.randn(8))
 
     plot_metrics(metrics)
-    plt.show()
