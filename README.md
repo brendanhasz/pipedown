@@ -84,7 +84,7 @@ class LoadFromCsv(pipedown.nodes.base.Node):
         return pd.read_csv(self.filename)
 ```
 
-Similarly, you can define models by creating a class with `fit()` and
+Similarly, you can define models by creating a `Model` class with `fit()` and
 `predict()` methods:
 
 ```python
@@ -106,7 +106,8 @@ creating a class which inherits from `DAG`.  That class should implement a
 are node names, and values are the node objects), and also an `edges()` method,
 which returns a dictionary mapping nodes to their parents.
 
-Pipedown also comes with a few built-in nodes which you can use, for example:
+Pipedown also comes with a few built-in nodes which you can use in your DAG,
+for example:
 
 * `Input` - to represent test data input
 * `Primary` - to split the data into features and the target variable
