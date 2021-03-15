@@ -3,8 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 
+from pipedown.cross_validation.splitters import RandomSplitter
 from pipedown.dag import DAG
-from pipedown.nodes.base import Input, Node, Primary
+from pipedown.nodes.base import Input, Model, Node, Primary
 from pipedown.nodes.filters import Collate, ItemFilter
 
 
@@ -327,3 +328,142 @@ def test_dag_get_and_save_html():
     assert not os.path.exists("test_dag_viewer.html")
     my_dag.save_html("test_dag_viewer.html")
     assert os.path.exists("test_dag_viewer.html")
+
+
+def test_cv_predict():
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = [1, 2, 3, 4, 5, 6]
+            df["b"] = [7, 8, 9, 10, 11, 12]
+            df["c"] = [13, 14, 15, 16, 17, 18]
+            return df
+
+    class MyModel(Model):
+        def __init__(self, add):
+            self._add = add
+
+        def fit(self, X, y):
+            pass
+
+        def predict(self, X):
+            return X["a"] + X["b"] + self._add
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "my_model": MyModel(1),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "my_model": "primary",
+            }
+
+    # Instantiate dag
+    my_dag = MyDAG()
+
+    # Call cv_predict with defaults
+    cv_splitter = RandomSplitter(n_folds=2)
+    predictions = my_dag.cv_predict(cv_splitter=cv_splitter)
+
+    assert isinstance(predictions, pd.DataFrame)
+    assert predictions.shape[0] == 6
+    assert predictions.shape[1] == 2
+    assert "y_true" in predictions
+    assert "my_model" in predictions
+    assert predictions["y_true"].iloc[0] == 13
+    assert predictions["y_true"].iloc[1] == 14
+    assert predictions["y_true"].iloc[2] == 15
+    assert predictions["y_true"].iloc[3] == 16
+    assert predictions["y_true"].iloc[4] == 17
+    assert predictions["y_true"].iloc[5] == 18
+    assert predictions["my_model"].iloc[0] == 9
+    assert predictions["my_model"].iloc[1] == 11
+    assert predictions["my_model"].iloc[2] == 13
+    assert predictions["my_model"].iloc[3] == 15
+    assert predictions["my_model"].iloc[4] == 17
+    assert predictions["my_model"].iloc[5] == 19
+
+
+def test_cv_predict_multiple_models():
+    class MyLoader(Node):
+        def run(self, *args):
+            df = pd.DataFrame()
+            df["a"] = [1, 2, 3, 4, 5, 6]
+            df["b"] = [7, 8, 9, 10, 11, 12]
+            df["c"] = [13, 14, 15, 16, 17, 18]
+            return df
+
+    class MyModel(Model):
+        def __init__(self, add):
+            self._add = add
+
+        def fit(self, X, y):
+            pass
+
+        def predict(self, X):
+            return X["a"] + X["b"] + self._add
+
+    class MyDAG(DAG):
+        def nodes(self):
+            return {
+                "input": Input(),
+                "loader": MyLoader(),
+                "primary": Primary(["a", "b"], "c"),
+                "item_filter_1": ItemFilter(lambda x: x["a"] < 4),
+                "item_filter_2": ItemFilter(lambda x: x["a"] >= 4),
+                "my_model1": MyModel(1),
+                "my_model2": MyModel(2),
+                "my_model3": MyModel(3),
+                "collate": Collate(),
+            }
+
+        def edges(self):
+            return {
+                "primary": {"test": "input", "train": "loader"},
+                "item_filter_1": "primary",
+                "item_filter_2": "primary",
+                "my_model1": "item_filter_1",
+                "my_model2": "item_filter_2",
+                "collate": ["my_model1", "my_model2"],
+                "my_model3": "primary",
+            }
+
+    # Instantiate dag
+    my_dag = MyDAG()
+
+    # Call cv_predict with defaults
+    cv_splitter = RandomSplitter(n_folds=2)
+    predictions = my_dag.cv_predict(
+        outputs=["collate", "my_model3"], cv_splitter=cv_splitter
+    )
+
+    assert isinstance(predictions, pd.DataFrame)
+    assert predictions.shape[0] == 6
+    assert predictions.shape[1] == 3
+    assert "y_true" in predictions
+    assert "collate" in predictions
+    assert "my_model3" in predictions
+    assert predictions["y_true"].iloc[0] == 13
+    assert predictions["y_true"].iloc[1] == 14
+    assert predictions["y_true"].iloc[2] == 15
+    assert predictions["y_true"].iloc[3] == 16
+    assert predictions["y_true"].iloc[4] == 17
+    assert predictions["y_true"].iloc[5] == 18
+    assert predictions["collate"].iloc[0] == 9
+    assert predictions["collate"].iloc[1] == 11
+    assert predictions["collate"].iloc[2] == 13
+    assert predictions["collate"].iloc[3] == 16
+    assert predictions["collate"].iloc[4] == 18
+    assert predictions["collate"].iloc[5] == 20
+    assert predictions["my_model3"].iloc[0] == 11
+    assert predictions["my_model3"].iloc[1] == 13
+    assert predictions["my_model3"].iloc[2] == 15
+    assert predictions["my_model3"].iloc[3] == 17
+    assert predictions["my_model3"].iloc[4] == 19
+    assert predictions["my_model3"].iloc[5] == 21
