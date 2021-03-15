@@ -38,6 +38,13 @@ class RandomSplitter(CrossValidationSplitter):
         self.n_per_fold = np.floor(X.shape[0] / self.get_n_folds())
 
     def get_n_folds(self):
+        """Get the number of folds
+
+        Returns
+        -------
+        n_folds : int
+            The number of folds
+        """
         return self.n_folds
 
     def get_fold(
