@@ -1,17 +1,14 @@
 import numpy as np
 import pandas as pd
-import pipedown
 
+import pipedown
+from pipedown.dag import DAG
 from pipedown.nodes.base import Input, Primary
 from pipedown.nodes.metrics import MeanSquaredError
-from pipedown.dag import DAG
-
 
 
 def test_readme_dag():
-
     class MeanImputer(pipedown.nodes.base.Node):
-
         def fit(self, X: pd.DataFrame, y: pd.Series):
             self.means = X.mean()
 
@@ -21,7 +18,6 @@ def test_readme_dag():
             return X, y
 
     class LoadFromCsv(pipedown.nodes.base.Node):
-
         def __init__(self, filename: str):
             self.filename = filename
 
@@ -33,7 +29,6 @@ def test_readme_dag():
             return df
 
     class LinearRegression(pipedown.nodes.base.Model):
-
         def fit(self, X: pd.DataFrame, y: pd.Series):
             xx = X.values
             yy = y.values.reshape((-1, 1))
@@ -44,7 +39,6 @@ def test_readme_dag():
             return pd.Series(data=y_pred.ravel(), index=X.index)
 
     class MyModel(DAG):
-
         def nodes(self):
             return {
                 "load_csv": LoadFromCsv("some_csv.csv"),
@@ -69,15 +63,15 @@ def test_readme_dag():
     test_input = {"feature1": 1.2, "feature2": 3.4}
     model.run(inputs={"test_input": test_input}, outputs="lr")
 
-    cv_predictions = model.cv_predict()
+    _ = model.cv_predict()
 
     model.cv_metric()
 
     model.save("test_readme_model.pkl")
-    loaded_model = pipedown.dag.io.load_dag("test_readme_model.pkl")
+    _ = pipedown.dag.io.load_dag("test_readme_model.pkl")
 
     # Get the raw html
-    raw_html = model.get_html()
+    _ = model.get_html()
 
     # Or, save to html file:
     model.save_html("test_readme_model.html")
