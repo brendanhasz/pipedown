@@ -25,10 +25,7 @@ def plot_metrics(
         sns.boxplot(x=x, y=y, data=metrics, hue=metric_col, ax=ax)
     else:
         sns.boxplot(
-            x=x,
-            y=y,
-            data=metrics[metrics[metric_col]==metric],
-            ax=ax
+            x=x, y=y, data=metrics[metrics[metric_col] == metric], ax=ax
         )
         plt.ylabel(metric)
-    plt.xticks(rotation=45, ha='right')
+    plt.xticks(rotation=45, ha="right")

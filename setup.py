@@ -31,6 +31,7 @@ setup(
         "matplotlib >= 3.0.0",
         "numpy >= 1.10.0",
         "pandas >= 1.0.0",
+        "seaborn >= 0.11.0",
     ],
     extras_require={
         "dev": [
