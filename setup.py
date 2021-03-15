@@ -5,12 +5,12 @@ with open("README.md", "r") as f:
 
 setup(
     name="pipedown",
-    version="0.0.8",
+    version="0.1.0",
     author="Brendan Hasz",
     author_email="winsto99@gmail.com",
     description="A data science pipelining framework for Python",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     url="https://github.com/brendanhasz/pipedown",
     license="MIT",
     packages=find_packages(where="src"),
@@ -24,12 +24,13 @@ setup(
     ],
     zip_safe=False,
     install_requires=[
-        "matplotlib >= 3.0.0",
-        "numpy >= 1.10.0",
-        "pandas >= 1.0.0",
+        "cloudpickle >= 1.6.0",
         "graphviz >= 0.16",
         "Jinja2 >= 2.0.0",
         "markdown >= 3.3.0",
+        "matplotlib >= 3.0.0",
+        "numpy >= 1.10.0",
+        "pandas >= 1.0.0",
     ],
     extras_require={
         "dev": [

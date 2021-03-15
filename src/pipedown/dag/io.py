@@ -1,8 +1,13 @@
-def save_dag(pipeline, filename: str):
+import cloudpickle
+
+
+def save_dag(dag, filename: str):
     """Save a DAG to file"""
-    # TODO
+    with open(filename, "wb") as fid:
+        cloudpickle.dump(dag, fid)
 
 
 def load_dag(filename: str):
     """Load a DAG from file"""
-    # TODO
+    with open(filename, "rb") as fid:
+        return cloudpickle.load(fid)

@@ -2,6 +2,9 @@
 *.swp
 *.swo
 
+# Data files
+*.pkl
+
 # model output files
 catboost_info/
 
