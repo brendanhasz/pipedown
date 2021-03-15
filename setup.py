@@ -10,7 +10,7 @@ setup(
     author_email="winsto99@gmail.com",
     description="A data science pipelining framework for Python",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     url="https://github.com/brendanhasz/pipedown",
     license="MIT",
     packages=find_packages(where="src"),
